@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SmartClone — Hardware that helps hardware heal · EDIO</title>
+<meta name="description" content="SmartClone is a standalone motherboard programming, diagnostic and recovery tool — built for the people who repair TVs for a living.">
+<link rel="canonical" href="https://edio.in/hardware.html">
+<meta property="og:url" content="https://edio.in/hardware.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EDIO">
+<meta property="og:title" content="SmartClone — Hardware that helps hardware heal · EDIO">
+<meta property="og:description" content="SmartClone is a standalone motherboard programming, diagnostic and recovery tool — built for the people who repair TVs for a living.">
+<meta property="og:image" content="https://edio.in/assets/img/og/edio-share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="629">
+<meta property="og:image:alt" content="A technician repairing a TV mainboard at an electronics bench">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#071923">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/img/favicon.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="assets/img/hardware/smartclone-board.webp">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/hardware.css">
+<script>
+  (function (h) {
+    h.classList.replace('no-js', 'js');
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      h.classList.add('is-intro');
+      setTimeout(function () { h.classList.remove('is-intro'); }, 4000);
+    }
+  })(document.documentElement);
+</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header" data-header>
+  <div class="container header-row">
+    <a class="brand" href="index.html" aria-label="EDIO home">
+      <img src="assets/img/logo-wordmark-light.png" alt="EDIO" width="123" height="32">
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="intelligence.html">Intelligence</a>
+      <a href="hardware.html" aria-current="page">Hardware</a>
+      <a href="impact.html">Impact</a>
+      <a href="about.html">About</a>
+    </nav>
+    <a class="btn btn-line header-cta" href="contact.html"><span class="lg">Partner with EDIO</span><span class="sm">Partner</span><i aria-hidden="true">→</i></a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="mobile-nav" data-menu-btn>
+      <span class="sr">Menu</span><i></i><i></i>
+    </button>
+  </div>
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile" data-mobile-nav hidden>
+    <a href="intelligence.html"><small>01</small>Intelligence</a>
+    <a href="hardware.html" aria-current="page"><small>02</small>Hardware</a>
+    <a href="impact.html"><small>03</small>Impact</a>
+    <a href="about.html"><small>04</small>About</a>
+  </nav>
+</header>
+
+<main id="main">
+
+<!-- ============ HERO — the instrument ============ -->
+<section class="hw-hero" data-hw-hero aria-label="SmartClone">
+  <div class="hw-scene" data-hw-scene aria-hidden="true">
+    <div class="px" data-px="8">
+      <div class="plate hw-plate" data-hw-plate>
+        <img src="assets/img/hardware/smartclone-board.webp" alt="" width="1586" height="992" fetchpriority="high">
+      </div>
+    </div>
+    <div class="px" data-px="16">
+      <!-- marker coords are % of the 1586×992 photo; --dx/--dy route each label off the faceplate on a leader -->
+      <div class="plate" data-hw-plate>
+        <div class="mk mk--lead" data-mk style="left:13.24%;top:44.86%;--dx:0;--dy:-270"><i class="mk-lead"><i></i><i></i></i><i class="mk-dot"></i><i class="mk-ring"></i><span class="mk-label">ISP port <b>24Cxx · 25xx</b></span></div>
+        <div class="mk mk--lead" data-mk style="left:27.43%;top:43.35%;--dx:0;--dy:-225"><i class="mk-lead"><i></i><i></i></i><i class="mk-dot"></i><i class="mk-ring"></i><span class="mk-label">Display <b>160 × 128 RGB565</b></span></div>
+        <div class="mk mk--lead" data-mk style="left:42.88%;top:35.99%;--dx:80;--dy:0"><i class="mk-lead"><i></i><i></i></i><i class="mk-dot"></i><i class="mk-ring"></i><span class="mk-label">IR <b>38 kHz</b></span></div>
+        <div class="mk mk--lead" data-mk style="left:27.43%;top:58.27%;--dx:0;--dy:150"><i class="mk-lead"><i></i><i></i></i><i class="mk-dot"></i><i class="mk-ring"></i><span class="mk-label">Controls <b>Up · OK · Down</b></span></div>
+        <div class="mk mk--lead" data-mk style="left:68.41%;top:65.52%;--dx:0;--dy:90"><i class="mk-lead"><i></i><i></i></i><i class="mk-dot"></i><i class="mk-ring"></i><span class="mk-label">Board link <b>UART · I²C</b></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="hw-shade" aria-hidden="true"></div>
+  <div class="hw-lines" aria-hidden="true"><i class="hl hl-h"></i><i class="hl hl-v hl-v1"></i><i class="hl hl-v hl-v2"></i></div>
+
+  <div class="container hw-hero-inner">
+    <p class="sys" data-sys>
+      <span class="sys-a">Hardware / SmartClone SC—1</span>
+      <span class="sys-b"><i class="led" aria-hidden="true"></i>Shipping now</span>
+    </p>
+    <div class="hw-hero-copy" data-hero-copy>
+      <h1 class="hw-title display" data-split>Hardware that helps hardware heal.</h1>
+      <p class="hw-sub" data-hero-fade>A standalone motherboard programming, diagnostic and recovery tool — built for the people who repair TVs for a living.</p>
+      <div class="hero-cta">
+        <a class="btn btn-solid" href="contact.html?role=smartclone" data-hero-fade>Request SmartClone <i aria-hidden="true">→</i></a>
+        <a class="btn btn-line" href="#specs" data-hero-fade>Technical specifications <i aria-hidden="true">↓</i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FACTS STRIP ============ -->
+<section class="facts" aria-label="At a glance">
+  <dl class="container facts-row" data-rise-stagger>
+    <div data-rise><dt>Operation</dt><dd>Standalone</dd></div>
+    <div data-rise><dt>Interfaces</dt><dd>UART, I²C, SPI, IR</dd></div>
+    <div data-rise><dt>Editor</dt><dd>On-device HEX</dd></div>
+    <div data-rise><dt>Modes</dt><dd>Seven, in firmware 1.0</dd></div>
+  </dl>
+</section>
+
+<!-- ============ 01 BUILT FOR THE BENCH ============ -->
+<section class="pro">
+  <div class="container pro-grid">
+    <div class="pro-copy">
+      <p class="kicker" data-rise><span>01</span> Built for the bench</p>
+      <h2 class="pro-title display" data-split>Built for the repair professional.</h2>
+      <p data-rise>SmartClone was designed from the bench outward. It runs on its own — in a service centre with no spare laptop, on a field visit, or on a crowded workshop table.</p>
+      <p data-rise>It covers the jobs that decide whether a board lives: talking to the system, reading and keeping its memory, editing where needed, writing back, and verifying.</p>
+    </div>
+    <figure class="pro-figure" data-rise>
+      <div class="pro-media"><img src="assets/img/hardware/smartclone-bench.webp" alt="SmartClone wired to a TV mainboard on a repair bench" width="1280" height="853" loading="lazy" data-drift></div>
+      <figcaption>On the bench, next to the board it's saving.</figcaption>
+    </figure>
+  </div>
+  <div class="container">
+    <blockquote class="rule" data-rule>
+      <p class="kicker"><span>—</span> Bench rule</p>
+      <p class="rule-quote display" data-split>Read first. Keep the read.</p>
+      <p class="rule-note" data-rise>The original contents of a board are the only backup that exists.</p>
+    </blockquote>
+  </div>
+</section>
+
+<!-- ============ 02 MODES ============ -->
+<section class="modes" id="modes" data-modes>
+  <div class="container modes-head">
+    <p class="kicker" data-rise><span>02</span> Operating modes</p>
+    <h2 class="modes-title display" data-split>Seven modes. Start from the symptom.</h2>
+    <p class="modes-lede" data-rise>Pick what the TV is doing on your bench. Every mode below ships in firmware 1.0 — coverage grows with updates.</p>
+  </div>
+
+  <div class="container">
+    <div class="modes-body" data-modes-body>
+      <div class="modes-bar" aria-hidden="true"><i data-modes-fill></i><span data-modes-count>01 / 08</span></div>
+
+      <article class="mode is-on" data-mode>
+        <button class="mode-pick" type="button" data-mode-pick><span class="mode-n">01</span><span class="mode-sym">Split, doubled or mirrored picture</span><span class="mode-name">T-CON fix</span></button>
+        <div class="mode-detail" data-mode-detail>
+          <figure class="mode-media"><img src="assets/img/hardware/mode-soic8.webp" alt="A test clip seated on an 8-pin memory chip on a board" width="1400" height="933" loading="lazy"></figure>
+          <div class="readout">
+            <p class="readout-tag">Mode 1 · T-CON division, mapping, mirror</p>
+            <h3>Fix panel division, LVDS mapping and mirror.</h3>
+            <p>Auto-detects SPI flash or I²C EEPROM, then corrects panel division (1↔2), JEIDA/VESA LVDS bit mapping and image mirror. A single byte, written and verified.</p>
+            <ul class="chips"><li>SPI flash</li><li>I²C EEPROM</li><li>Auto-detect</li></ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="mode" data-mode>
+        <button class="mode-pick" type="button" data-mode-pick><span class="mode-n">02</span><span class="mode-sym">Stuck on logo, boot loop</span><span class="mode-name">UART boot</span></button>
+        <div class="mode-detail" data-mode-detail>
+          <figure class="mode-media"><img src="assets/img/hardware/mode-uart.webp" alt="Serial leads connected to a board's UART header" width="1400" height="876" loading="lazy" style="object-position:58% 45%"></figure>
+          <div class="readout">
+            <p class="readout-tag">Mode 2 · UART boot diagnostic</p>
+            <h3>Read the boot log live, find where it stops.</h3>
+            <p>Auto-baud serial probe that parses the boot stream and tracks six boot stages on the LCD. Flags boot loops and kernel panics, and recommends the next action.</p>
+            <ul class="chips"><li>9,600–921,600 bps</li><li>Six boot stages</li><li>Rule-based</li></ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="mode" data-mode>
+        <button class="mode-pick" type="button" data-mode-pick><span class="mode-n">03</span><span class="mode-sym">New panel, no picture</span><span class="mode-name">Panel ID</span></button>
+        <div class="mode-detail" data-mode-detail>
+          <figure class="mode-media"><img src="assets/img/hardware/mode-eeprom-clip.webp" alt="A programming clip on an EEPROM chip" width="1400" height="876" loading="lazy" style="object-position:62% 40%"></figure>
+          <div class="readout">
+            <p class="readout-tag">Mode 3 · Panel ID copier</p>
+            <h3>Copy the old panel ID onto the replacement.</h3>
+            <p>Reads the source panel ID EEPROM, archives it to SD, then writes it to the replacement chip. Detects address, size, addressing mode and bank count on its own.</p>
+            <ul class="chips"><li>Sony panels</li><li>SD archive</li><li>Verify</li></ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="mode" data-mode>
+        <button class="mode-pick" type="button" data-mode-pick><span class="mode-n">04</span><span class="mode-sym">Washed out, flicker, lines</span><span class="mode-name">PMIC</span></button>
+        <div class="mode-detail" data-mode-detail>
+          <figure class="mode-media"><img src="assets/img/hardware/mode-macro.webp" alt="Macro view of circuit traces and a processor" width="1600" height="667" loading="lazy" style="object-position:72% 50%"></figure>
+          <div class="readout">
+            <p class="readout-tag">Mode 4 · T-CON PMIC programmer</p>
+            <h3>Set panel voltages in millivolts.</h3>
+            <p>Edit VGH, VGL, VCOM, AVDD and other voltage registers across 33 supported PMIC chips — shown in millivolts, with range checks before any write.</p>
+            <ul class="chips"><li>33 chips</li><li>Range-checked</li><li>mV entry</li></ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="mode" data-mode>
+        <button class="mode-pick" type="button" data-mode-pick><span class="mode-n">05</span><span class="mode-sym">Chip needs reading or writing</span><span class="mode-name">IC program</span></button>
+        <div class="mode-detail" data-mode-detail>
+          <figure class="mode-media mode-media--zif"><img src="assets/img/hardware/smartclone-top.webp" alt="SmartClone's ZIF socket for EEPROM and flash chips" width="1100" height="825" loading="lazy"></figure>
+          <div class="readout">
+            <p class="readout-tag">Mode 5 · IC programmer</p>
+            <h3>Read, write, verify, erase.</h3>
+            <p>General-purpose programming for 24Cxx EEPROMs and 25xx SPI flash, with SD archive and restore.</p>
+            <ul class="chips"><li>24C01–24C512</li><li>25xx SPI</li><li>SD restore</li></ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="mode" data-mode>
+        <button class="mode-pick" type="button" data-mode-pick><span class="mode-n">06</span><span class="mode-sym">Remote lost, service menu needed</span><span class="mode-name">IR mode</span></button>
+        <div class="mode-detail" data-mode-detail>
+          <figure class="mode-media"><img src="assets/img/hardware/mode-ir.webp" alt="A remote aimed at a TV board's infrared receiver" width="1400" height="876" loading="lazy" style="object-position:45% 50%"></figure>
+          <div class="readout">
+            <p class="readout-tag">Mode 6 · IR mode</p>
+            <h3>Service codes, decode, learn and replay.</h3>
+            <p>Service-mode codes for a range of TV brands, plus receive and decode (NEC, Sony SIRC, Samsung), learn and replay, a brand database and auto-match.</p>
+            <ul class="chips"><li>NEC</li><li>Sony SIRC</li><li>Samsung</li></ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="mode" data-mode>
+        <button class="mode-pick" type="button" data-mode-pick><span class="mode-n">07</span><span class="mode-sym">Check a saved dump</span><span class="mode-name">Files</span></button>
+        <div class="mode-detail" data-mode-detail>
+          <figure class="mode-media mode-media--hex" aria-label="Illustration of the on-device hex viewer">
+            <div class="hex" aria-hidden="true">
+              <div class="hex-head"><span>Hex viewer</span><span>8 × 8</span></div>
+              <div class="hex-grid" data-hex></div>
+              <div class="hex-foot"><span>▲ ● ▼</span><span>Illustrative</span></div>
+            </div>
+          </figure>
+          <div class="readout">
+            <p class="readout-tag">Mode 7 · File manager</p>
+            <h3>Browse the SD card, open any .bin.</h3>
+            <p>Browse files, see storage statistics and open any .bin in the on-device hex viewer and 8 × 8 hex editor.</p>
+            <ul class="chips"><li>FAT32</li><li>Hex viewer</li><li>Hex editor</li></ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="mode" data-mode>
+        <button class="mode-pick" type="button" data-mode-pick><span class="mode-n">+</span><span class="mode-sym">Working from a PC</span><span class="mode-name">USB-CDC</span></button>
+        <div class="mode-detail" data-mode-detail>
+          <figure class="mode-media mode-media--usb"><img src="assets/img/hardware/smartclone-board.webp" alt="SmartClone with its USB lead connected" width="1586" height="992" loading="lazy"></figure>
+          <div class="readout">
+            <p class="readout-tag">Shared · USB-CDC host link</p>
+            <h3>Drive it from a computer when you want to.</h3>
+            <p>Over USB the tool appears as a virtual COM port, so a PC application can run the same programming operations. One-click firmware updates too.</p>
+            <ul class="chips"><li>USB 2.0 FS</li><li>Virtual COM</li><li>Updates</li></ul>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 CASE RECORD ============ -->
+<section class="record" data-record>
+  <div class="container record-grid">
+    <div class="record-copy">
+      <p class="kicker" data-rise><span>03</span> Case record</p>
+      <h2 class="record-title display" data-split>A split-screen Sony panel, fixed in seven seconds.</h2>
+      <p data-rise>Two-division display fault on a Sony smart TV. Plug in, press OK, done — no computer, no software.</p>
+    </div>
+    <div class="record-card" data-record-card>
+      <div class="record-head"><span>Repair case</span><span class="record-time"><b data-record-time>0.0</b> s</span></div>
+      <dl>
+        <div class="record-row" data-record-row><dt>Device</dt><dd>TV · Sony · 55″</dd></div>
+        <div class="record-row" data-record-row><dt>Symptom</dt><dd>Picture split in two halves</dd></div>
+        <div class="record-row" data-record-row><dt>Measured</dt><dd>T-CON EEPROM · division byte wrong</dd></div>
+        <div class="record-row" data-record-row><dt>Action</dt><dd>Division 1 → 2 · written</dd></div>
+        <div class="record-row" data-record-row><dt>Outcome</dt><dd>Verified by read-back · 7 s</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 PROCESS ============ -->
+<section class="process" data-process>
+  <div class="container">
+    <div class="process-head">
+      <p class="kicker" data-rise><span>04</span> Process</p>
+      <h2 class="process-title display" data-split>How SmartClone works.</h2>
+    </div>
+    <div class="rail" data-rail>
+      <div class="rail-line" aria-hidden="true"><i data-rail-fill></i></div>
+      <ol class="rail-steps">
+        <li data-step><span class="rail-n">01</span><b>Connect</b><span>Clip onto the board.</span></li>
+        <li data-step><span class="rail-n">02</span><b>Identify</b><span>Find the chip and bus.</span></li>
+        <li data-step><span class="rail-n">03</span><b>Diagnose</b><span>Check the rail responds.</span></li>
+        <li data-step><span class="rail-n">04</span><b>Read</b><span>Pull the contents.</span></li>
+        <li data-step><span class="rail-n">05</span><b>Analyse</b><span>Look at it on-device.</span></li>
+        <li data-step><span class="rail-n">06</span><b>Recover</b><span>Program what's wrong.</span></li>
+        <li data-step><span class="rail-n">07</span><b>Verify</b><span>Read back, compare.</span></li>
+        <li data-step><span class="rail-n">08</span><b>Repair</b><span>Board alive.</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 SPECS + FAQ ============ -->
+<section class="specs" id="specs">
+  <div class="container">
+    <div class="specs-head">
+      <p class="kicker kicker--dark" data-rise><span>05</span> Specifications</p>
+      <h2 class="specs-title display" data-split>Specifications and questions.</h2>
+      <p class="specs-note" data-rise>Rows we haven't published yet are left out rather than estimated.</p>
+    </div>
+
+    <div class="spec-tables">
+      <div class="spec" data-rise>
+        <h3>Platform and interfaces</h3>
+        <dl>
+          <div><dt>Microcontroller</dt><dd>STM32F401RET6, ARM Cortex-M4 at 84 MHz</dd></div>
+          <div><dt>Memory</dt><dd>512 KB flash, 96 KB SRAM</dd></div>
+          <div><dt>Display</dt><dd>160 × 128 RGB565, SPI</dd></div>
+          <div><dt>Controls</dt><dd>Three buttons — up, OK, down, short press or hold</dd></div>
+          <div><dt>Storage</dt><dd>SD card, FAT32</dd></div>
+          <div><dt>Serial probe</dt><dd>USART, 9,600 to 921,600 bps, auto-baud</dd></div>
+          <div><dt>Infrared</dt><dd>Receive and transmit, 38 kHz carrier</dd></div>
+          <div><dt>Host link</dt><dd>USB 2.0 full speed, CDC virtual COM port</dd></div>
+        </dl>
+      </div>
+      <div class="spec" data-rise>
+        <h3>Operations</h3>
+        <dl>
+          <div><dt>Operating modes</dt><dd>Seven, plus USB-CDC and one-click update</dd></div>
+          <div><dt>EEPROM support</dt><dd>24C01 to 24C512, auto-detected</dd></div>
+          <div><dt>SPI flash</dt><dd>25xx series, identified by JEDEC ID</dd></div>
+          <div><dt>PMIC database</dt><dd>33 chips — Chipone, Sitronix, Richtek, Silergy, TI</dd></div>
+          <div><dt>Voltage editing</dt><dd>VGH, VGHF, VGL, VGL2, AVDD, VCOM in mV</dd></div>
+          <div><dt>IR protocols</dt><dd>NEC, Sony SIRC (12/15/20-bit), Samsung</dd></div>
+          <div><dt>Firmware update</dt><dd>One-click over USB, SD card or mass storage</dd></div>
+          <div><dt>Verification</dt><dd>Read-back comparison after every write</dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="faq">
+      <h3 class="faq-title" data-rise>Questions</h3>
+      <div class="faq-list" data-rise-stagger>
+        <details data-rise><summary>Do I need a computer to use SmartClone?</summary><p>No. All seven modes run on the device itself. The USB-CDC link to a PC is there if you want it, never required.</p></details>
+        <details data-rise><summary>Which memory chips does it support?</summary><p>24C01 to 24C512 EEPROMs, with size, addressing mode and banks auto-detected, and 25xx SPI flash identified by JEDEC ID.</p></details>
+        <details data-rise><summary>How do I update the firmware?</summary><p>One click over USB, SD card or mass storage.</p></details>
+        <details data-rise><summary>Does it use AI to diagnose faults today?</summary><p>Not yet. UART diagnostics are rule-based. AI-assisted suggestions are on the roadmap — we will say so plainly when they ship.</p></details>
+        <details data-rise><summary>Can I download firmware images?</summary><p>Firmware images are not public. For firmware or flashing support, message the EDIO team on WhatsApp.</p></details>
+        <details data-rise><summary>How do I buy one, or become a dealer?</summary><p>Ask for a demo, pricing or dealership details on WhatsApp or through the contact form. A person replies.</p></details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 SHIPS / DOESN'T ============ -->
+<section class="ships">
+  <div class="container">
+    <p class="kicker" data-rise><span>06</span> Status</p>
+    <h2 class="ships-title display" data-split>What ships, and what doesn't — yet.</h2>
+    <div class="ships-grid">
+      <div class="ships-col" data-rise>
+        <h3><i class="led" aria-hidden="true"></i>Available today</h3>
+        <ul class="ships-list">
+          <li>Seven modes, all running standalone</li>
+          <li>T-CON division, LVDS mapping and mirror fixes</li>
+          <li>UART boot diagnostics, six-stage tracking</li>
+          <li>Sony panel ID read, archive, write, verify</li>
+          <li>PMIC voltage editing across 33 chips</li>
+          <li>EEPROM &amp; SPI flash, with SD archive</li>
+          <li>IR service codes, decode, learn, replay</li>
+          <li>On-device hex editing, USB-CDC to PC</li>
+        </ul>
+      </div>
+      <div class="ships-col ships-col--planned" data-rise>
+        <h3><i class="led led--off" aria-hidden="true"></i>Planned or in development</h3>
+        <ul class="ships-list">
+          <li>Structured capture of repair cases from the tool</li>
+          <li>AI-assisted diagnostic suggestions</li>
+          <li>Wider device and category coverage</li>
+          <li>Expanded compatibility library</li>
+        </ul>
+        <p class="ships-note">Roadmap items. Not part of what ships today.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CLOSE ============ -->
+<section class="close">
+  <div class="container close-grid">
+    <p class="kicker kicker--dark"><span>—</span> Get SmartClone</p>
+    <h2 class="close-title">Ask for a demo, pricing or dealership details.</h2>
+    <div class="close-side">
+      <p>On WhatsApp or through the contact form. A person replies.</p>
+      <div class="close-actions">
+        <a class="btn btn-ink" href="contact.html?role=smartclone">Request SmartClone <i aria-hidden="true">→</i></a>
+        <a class="btn btn-ink-line" href="https://wa.me/918925927588" rel="noopener">WhatsApp +91 89259 27588 <i aria-hidden="true">↗</i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-row">
+    <img src="assets/img/logo-wordmark-light.png" alt="EDIO" width="92" height="24">
+    <nav aria-label="Footer">
+      <a href="intelligence.html">Intelligence</a>
+      <a href="hardware.html">Hardware</a>
+      <a href="impact.html">Impact</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <p>© Ediode Electronics Private Limited</p>
+  </div>
+</footer>
+
+<script src="assets/js/vendor/gsap.min.js" defer></script>
+<script src="assets/js/vendor/ScrollTrigger.min.js" defer></script>
+<script src="assets/js/site.js" defer></script>
+<script src="assets/js/hardware.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EDIO — Building the repair intelligence layer</title>
+<meta name="description" content="EDIO builds repair hardware and the repair intelligence layer behind it. Every repair, captured and made useful for the next one.">
+<link rel="canonical" href="https://edio.in/">
+<meta property="og:url" content="https://edio.in/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EDIO">
+<meta property="og:title" content="EDIO — Building the repair intelligence layer">
+<meta property="og:description" content="EDIO builds repair hardware and the repair intelligence layer behind it. Every repair, captured and made useful for the next one.">
+<meta property="og:image" content="https://edio.in/assets/img/og/edio-share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="629">
+<meta property="og:image:alt" content="A technician repairing a TV mainboard at an electronics bench">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#071923">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/img/favicon.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="assets/img/intel-bench.webp">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/home.css">
+<script>
+  (function (h) {
+    h.classList.replace('no-js', 'js');
+    // hold the first frame dark until the intro runs; failsafe if scripts never arrive
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      h.classList.add('is-intro');
+      setTimeout(function () { h.classList.remove('is-intro'); }, 4000);
+    }
+  })(document.documentElement);
+</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header" data-header>
+  <div class="container header-row">
+    <a class="brand" href="index.html" aria-label="EDIO home">
+      <img src="assets/img/logo-wordmark-light.png" alt="EDIO" width="123" height="32">
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="intelligence.html">Intelligence</a>
+      <a href="hardware.html">Hardware</a>
+      <a href="impact.html">Impact</a>
+      <a href="about.html">About</a>
+    </nav>
+    <a class="btn btn-line header-cta" href="contact.html"><span class="lg">Partner with EDIO</span><span class="sm">Partner</span><i aria-hidden="true">→</i></a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="mobile-nav" data-menu-btn>
+      <span class="sr">Menu</span><i></i><i></i>
+    </button>
+  </div>
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile" data-mobile-nav hidden>
+    <a href="intelligence.html"><small>01</small>Intelligence</a>
+    <a href="hardware.html"><small>02</small>Hardware</a>
+    <a href="impact.html"><small>03</small>Impact</a>
+    <a href="about.html"><small>04</small>About</a>
+  </nav>
+</header>
+
+<main id="main">
+
+<!-- ============ HERO + STORY (one pinned scene) ============ -->
+<section class="hero" data-hero aria-label="Introduction">
+
+  <!-- Visual scene: scaled on scroll, layered for parallax -->
+  <div class="scene" data-scene aria-hidden="true">
+    <div class="px px-bg" data-px="8">
+      <div class="plate" data-plate>
+        <img class="plate-img" src="assets/img/intel-bench.webp" alt="" width="1672" height="941" fetchpriority="high">
+        <img class="plate-img plate-img--sharp" src="assets/img/intel-bench.webp" alt="" width="1672" height="941">
+      </div>
+    </div>
+
+    <div class="px px-ov" data-px="14">
+      <div class="plate" data-plate>
+        <svg class="traces" viewBox="0 0 1672 941" preserveAspectRatio="none">
+          <defs>
+            <g id="trace-set">
+              <!-- board ⇄ scope -->
+              <path d="M968 574 H900 L870 544 H760 L742 526 V470"/>
+              <!-- board ⇄ laptop -->
+              <path d="M946 590 H846 L818 618 H560 L528 586 V520 H470"/>
+              <!-- board bus -->
+              <path d="M900 600 H1010 L1030 580 H1064"/>
+              <path d="M920 612 H1040 L1060 592 H1120 L1150 562 H1210"/>
+              <path d="M880 560 L900 540 H990 L1010 520 H1048"/>
+              <!-- board ⇄ microscope -->
+              <path d="M1002 560 V470 L982 450 V380"/>
+              <!-- lower bus -->
+              <path d="M930 628 H1080 L1100 648 H1230"/>
+              <path d="M860 640 H1000 L1020 660 H1160"/>
+            </g>
+            <g id="trace-pads">
+              <circle cx="742" cy="470" r="3.5"/><circle cx="470" cy="520" r="3.5"/>
+              <circle cx="1064" cy="580" r="3"/><circle cx="1210" cy="562" r="3"/>
+              <circle cx="1048" cy="520" r="3"/><circle cx="982" cy="380" r="3.5"/>
+              <circle cx="1230" cy="648" r="3"/><circle cx="1160" cy="660" r="3"/>
+            </g>
+          </defs>
+          <g class="traces-base"><use href="#trace-set"/><use href="#trace-pads" class="pads"/></g>
+        </svg>
+        <svg class="traces traces--lit" viewBox="0 0 1672 941" preserveAspectRatio="none">
+          <g class="traces-glow"><use href="#trace-set"/><use href="#trace-pads" class="pads"/></g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="px px-lb" data-px="18">
+      <div class="plate" data-plate>
+        <!-- positions in image space: left = x/1672, top = y/941 -->
+        <div class="mk mk--focus mk--left" data-mk style="left:58.6%;top:61%">
+          <i class="mk-dot"></i><i class="mk-ring"></i>
+          <span class="mk-label">Board <b>T-CON</b></span>
+        </div>
+        <div class="mk" data-mk style="left:63.7%;top:61.2%">
+          <i class="mk-dot"></i><i class="mk-ring"></i>
+          <span class="mk-label">Probe <b>Active</b></span>
+        </div>
+        <div class="mk mk--left" data-mk style="left:39.2%;top:45.2%">
+          <i class="mk-dot"></i><i class="mk-ring"></i>
+          <span class="mk-label">Measurement <b>Live</b></span>
+        </div>
+        <div class="mk mk--left" data-mk style="left:22.8%;top:43.6%">
+          <i class="mk-dot"></i><i class="mk-ring"></i>
+          <span class="mk-label">Case <b>Logging</b></span>
+        </div>
+        <div class="mk mk--up" data-mk style="left:58.7%;top:40.4%">
+          <i class="mk-dot"></i><i class="mk-ring"></i>
+          <span class="mk-label">Read <b>8,192 B</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legibility shading (not scaled) -->
+  <div class="hero-shade" aria-hidden="true"></div>
+
+  <!-- Engineering frame lines -->
+  <div class="frame-lines" aria-hidden="true">
+    <i class="fl fl-h fl-h1"></i><i class="fl fl-h fl-h2"></i>
+    <i class="fl fl-v fl-v1"></i><i class="fl fl-v fl-v2"></i><i class="fl fl-v fl-v3"></i>
+  </div>
+
+  <!-- Repair scan -->
+  <div class="scan" aria-hidden="true" data-scan><span class="scan-tag">Scan</span></div>
+
+  <!-- Story overlays (captured information → structured data) -->
+  <div class="story" aria-hidden="true">
+    <svg class="leader" data-leader><path d="M0 0" pathLength="1"/></svg>
+
+    <div class="case" data-case>
+      <div class="case-body" data-case-body>
+        <div class="case-head"><span>Repair case</span><span class="case-state">● structured</span></div>
+        <dl class="case-rows">
+          <div class="case-row"><dt>Symptom</dt><dd>Picture split in two halves</dd></div>
+          <div class="case-row"><dt>Measured</dt><dd>T-CON EEPROM · division byte wrong</dd></div>
+          <div class="case-row"><dt>Action</dt><dd>Division 1 → 2 · written</dd></div>
+          <div class="case-row"><dt>Outcome</dt><dd>Verified by read-back</dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="dataset" data-dataset></div>
+  </div>
+
+  <!-- Hero copy -->
+  <div class="container hero-inner">
+    <p class="sys" data-sys>
+      <span class="sys-a">EDIO / Repair intelligence system</span>
+      <span class="sys-b" data-sys-status>Initializing…</span>
+    </p>
+
+    <div class="hero-copy" data-hero-copy>
+      <h1 class="hero-title" data-split data-px-text="3">Building the repair intelligence layer.</h1>
+      <p class="hero-sub" data-reveal>Every repair, captured and made useful for the next one.</p>
+      <div class="hero-cta" data-hero-cta>
+        <a class="btn btn-solid" href="contact.html" data-reveal>Partner with EDIO <i aria-hidden="true">→</i></a>
+        <a class="btn btn-line" href="#how" data-reveal>How it works <i aria-hidden="true">→</i></a>
+      </div>
+    </div>
+
+    <!-- Story captions -->
+    <div class="captions" id="how">
+      <div class="cap" data-cap>
+        <p class="kicker"><span>01</span> Physical repair</p>
+        <h2>Repair is where intelligence begins.</h2>
+        <p>Every repair holds four signals. Today they live in a technician's head or a notebook — and leave with them.</p>
+      </div>
+      <div class="cap" data-cap>
+        <p class="kicker"><span>02</span> Captured information</p>
+        <h2>Turn repair work into structured knowledge.</h2>
+        <p>The same repair, written down properly: one schema for every case, with units and context on every measurement.</p>
+      </div>
+      <div class="cap" data-cap>
+        <p class="kicker"><span>03</span> Structured data</p>
+        <h2>The same schema, every time.</h2>
+        <p>Structured repair cases: symptom, measurement, action, outcome. One case becomes one tile in a growing dataset.</p>
+        <p class="fine">Illustrative · repair-case schema in development</p>
+      </div>
+    </div>
+
+    <div class="hero-meta">
+      <a class="cue" href="#bench" data-cue>Scroll to explore <i aria-hidden="true">↓</i></a>
+      <span class="coord" data-reveal-meta>10.96° N · 78.08° E — Karur, TN</span>
+      <ol class="steps" data-steps aria-hidden="true">
+        <li class="is-on"><span>01</span> Physical repair</li>
+        <li><span>02</span> Captured</li>
+        <li><span>03</span> Structured</li>
+      </ol>
+    </div>
+  </div>
+
+
+
+</section>
+
+<!-- ============ SECTION 2: AT THE BENCH ============ -->
+<section class="bench" id="bench" data-bench>
+  <div class="container bench-grid">
+    <div class="bench-copy">
+      <p class="kicker kicker--light"><span>04</span> At the bench</p>
+      <h2 class="bench-title" data-split>Real people, real boards. That's where the data comes from.</h2>
+      <p class="bench-sub">Where repair knowledge is made — and usually lost.</p>
+
+      <ol class="index" data-index>
+        <li><span>01</span>Board</li>
+        <li><span>02</span>Fault</li>
+        <li><span>03</span>Repair</li>
+        <li><span>04</span>Outcome</li>
+      </ol>
+    </div>
+
+    <figure class="bench-figure" data-bench-frame>
+      <!-- one 1254² collage, cropped per quadrant. data-q = source crop "x y w h", data-f = focal point inside it;
+           annotation coords are % of the full image so every panel shares one coordinate space -->
+      <div class="bench-media" data-bench-media role="img" aria-label="Independent technicians at their repair benches">
+        <div class="panel" data-panel data-q="16 12 588 590" data-f=".5 .45">
+          <div class="plate" data-panel-plate>
+            <img src="assets/img/repair-people.jpg" alt="" width="1254" height="1254" loading="lazy">
+            <svg class="anno-lines" viewBox="0 0 1254 1254" preserveAspectRatio="none" aria-hidden="true"><path data-anno-line d="M170 330 V262 H246" pathLength="1"/></svg>
+            <div class="anno" data-anno style="left:13.56%;top:26.32%"><i class="mk-dot"></i><i class="mk-ring"></i></div>
+            <span class="anno-label" data-anno-label style="left:19.62%;top:20.89%">01 Board</span>
+          </div>
+        </div>
+        <div class="panel" data-panel data-q="650 12 590 590" data-f=".5 .4">
+          <div class="plate" data-panel-plate>
+            <img src="assets/img/repair-people.jpg" alt="" width="1254" height="1254" loading="lazy">
+            <svg class="anno-lines" viewBox="0 0 1254 1254" preserveAspectRatio="none" aria-hidden="true"><path data-anno-line d="M905 300 V232 H980" pathLength="1"/></svg>
+            <div class="anno" data-anno style="left:72.17%;top:23.92%"><i class="mk-dot"></i><i class="mk-ring"></i></div>
+            <span class="anno-label" data-anno-label style="left:78.15%;top:18.5%">02 Fault</span>
+          </div>
+        </div>
+        <div class="panel" data-panel data-q="16 642 588 590" data-f=".5 .45">
+          <div class="plate" data-panel-plate>
+            <img src="assets/img/repair-people.jpg" alt="" width="1254" height="1254" loading="lazy">
+            <svg class="anno-lines" viewBox="0 0 1254 1254" preserveAspectRatio="none" aria-hidden="true"><path data-anno-line d="M268 955 V884 H344" pathLength="1"/></svg>
+            <div class="anno" data-anno style="left:21.37%;top:76.16%"><i class="mk-dot"></i><i class="mk-ring"></i></div>
+            <span class="anno-label" data-anno-label style="left:27.43%;top:70.49%">03 Repair</span>
+          </div>
+        </div>
+        <div class="panel" data-panel data-q="650 642 590 590" data-f=".5 .42">
+          <div class="plate" data-panel-plate>
+            <img src="assets/img/repair-people.jpg" alt="" width="1254" height="1254" loading="lazy">
+            <svg class="anno-lines" viewBox="0 0 1254 1254" preserveAspectRatio="none" aria-hidden="true"><path data-anno-line d="M712 1068 V988 H788" pathLength="1"/></svg>
+            <div class="anno" data-anno style="left:56.78%;top:85.17%"><i class="mk-dot"></i><i class="mk-ring"></i></div>
+            <span class="anno-label" data-anno-label style="left:62.84%;top:78.79%">04 Outcome</span>
+          </div>
+        </div>
+        <div class="bench-tint" aria-hidden="true"></div>
+      </div>
+      <span class="bench-tag">At the bench · Karur</span>
+      <figcaption>Independent technicians at their repair benches.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ CLOSE ============ -->
+<section class="close">
+  <div class="container close-grid">
+    <p class="kicker kicker--dark"><span>—</span> Build with us</p>
+    <h2 class="close-title">Repair more. Waste less. Build smarter.</h2>
+    <div class="close-side">
+      <p>Investor, partner or technician — tell us who you are and a person from the team will reply.</p>
+      <a class="btn btn-ink" href="contact.html">Talk to EDIO <i aria-hidden="true">→</i></a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-row">
+    <img src="assets/img/logo-wordmark-light.png" alt="EDIO" width="92" height="24">
+    <nav aria-label="Footer">
+      <a href="intelligence.html">Intelligence</a>
+      <a href="hardware.html">Hardware</a>
+      <a href="impact.html">Impact</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <p>© Ediode Electronics Private Limited</p>
+  </div>
+</footer>
+
+<script src="assets/js/vendor/gsap.min.js" defer></script>
+<script src="assets/js/vendor/ScrollTrigger.min.js" defer></script>
+<script src="assets/js/site.js" defer></script>
+<script src="assets/js/home.js" defer></script>
+</body>
+</html>
