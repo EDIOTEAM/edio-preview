@@ -76,6 +76,7 @@
   color: var(--ink-hi); text-align: center;
 }
 .ht-line { display: block; }
+.ht-a, .ht-b { display: inline; }
 
 /* the object sits in front of the headline's second line, like a product on a plinth */
 .device {
@@ -355,7 +356,9 @@
 
 @media (max-width: 767px) {
   .hero { min-height: 600px; }
-  .hero-title { font-size: clamp(44px, 13.6vw, 72px); line-height: .92; }
+  .hero-title { font-size: clamp(44px, 13.6vw, 72px); line-height: .88; text-align: left; letter-spacing: -.05em; }
+  .ht-a, .ht-b { display: block; }
+  .ht-line, .ht-a, .ht-b { white-space: nowrap; }
   .device { width: var(--dev-w, 124vw); top: var(--dev-top, 30%); }
   .hs > span { display: none; }          /* phones: dots only; the case card carries the words */
   .device-tag { font-size: 9px; letter-spacing: .14em; }

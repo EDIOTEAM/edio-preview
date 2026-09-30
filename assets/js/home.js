@@ -48,8 +48,9 @@
   function placeDevice() {
     const hr = hero.getBoundingClientRect();
     // the last line the headline actually renders (phones wrap it to four), so the device overlaps "layer."
-    const rg = document.createRange(); rg.selectNodeContents(lines[1]);
-    const rs = rg.getClientRects(), l2 = rs.length ? rs[rs.length - 1] : lines[1].getBoundingClientRect();
+    const last = lines[lines.length - 1];
+    const rg = document.createRange(); rg.selectNodeContents(last);
+    const rs = rg.getClientRects(), l2 = rs.length ? rs[rs.length - 1] : last.getBoundingClientRect();
     const top = (l2.top - hr.top) + l2.height * (hero.clientWidth < 768 ? 1.02 : .8) - .34 * device.offsetHeight;
     hero.style.setProperty('--dev-top', Math.round(top) + 'px');
     return top;
@@ -67,7 +68,18 @@
       placeDevice();
     }
   }
+  function fitHeadline() {
+    const [l1, la, lb] = lines;
+    [l1, la, lb].forEach(el => { el.style.fontSize = ''; });
+    if (hero.clientWidth >= 768) return;
+    const avail = title.clientWidth;
+    const inkWidth = el => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; };
+    const fit = el => { el.style.fontSize = '100px'; const s = Math.floor(100 * avail / inkWidth(el) * 10) / 10; el.style.fontSize = s + 'px'; return s; };
+    fit(l1);
+    lb.style.fontSize = fit(la) + 'px';
+  }
   function layoutHero() {
+    fitHeadline();
     hero.style.removeProperty('--title-pad');
     hero.style.removeProperty('--dev-w');
     const top = placeDevice();
