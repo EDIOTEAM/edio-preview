@@ -440,7 +440,14 @@
 
   // wait for the headline font (max 1.5s) so the device is placed once, against final text metrics
   const fontsReady = document.fonts ? Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]) : Promise.resolve();
-  fontsReady.then(() => {
+  // the device must be on screen before the headline types: wait for the 3D model to render (max 6s)
+  const modelReady = new Promise(r => {
+    if (model.loaded) return r();
+    model.addEventListener('load', () => r(), { once: true });
+    model.addEventListener('error', () => r(), { once: true });
+    setTimeout(r, 6000);
+  });
+  Promise.all([fontsReady, modelReady]).then(() => {
   layout();
   placed = true;
   hero.classList.add('is-placed');
