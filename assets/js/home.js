@@ -155,11 +155,16 @@
     leader.setAttribute('d', cx > ax ? `M${ax} ${ay} H${mx} V${cy} H${cx}` : `M${ax} ${ay} V${c.bottom - hr.top}`);
   }
 
-  if (!window.gsap || !window.ScrollTrigger) { html.classList.remove('is-intro'); hero.classList.add('is-placed'); return; }
+  /* ---------- The page is held still from the first frame (index.html <head>) until the model has
+     rendered and the headline has typed; this releases it ---------- */
+  const unlockScroll = () => { if (window.__edioUnlock) window.__edioUnlock(); };
+
+  if (!window.gsap || !window.ScrollTrigger) { unlockScroll(); html.classList.remove('is-intro'); hero.classList.add('is-placed'); return; }
   gsap.registerPlugin(ScrollTrigger);
   ScrollTrigger.config({ ignoreMobileResize: true });
   // touch devices: ScrollTrigger handles the scroll so pinned scenes never jump when the address bar moves
-  if (window.matchMedia('(pointer: coarse)').matches) ScrollTrigger.normalizeScroll(true);
+  // (switched on once the intro has finished, so it can't scroll the page while it is held)
+  const normalizeTouch = () => { if (window.matchMedia('(pointer: coarse)').matches) ScrollTrigger.normalizeScroll(true); };
 
   /* ---------- Bench section (collage panels) ---------- */
   const BENCH_IMG = { w: 1254, h: 1254 };
@@ -193,7 +198,25 @@
   const placeHorizon = () => { if (horizon) horizon.style.top = Math.round(device.offsetTop + .745 * device.offsetHeight) + 'px'; };
   function layout() { layoutHero(); placeHorizon(); layoutBench(); }
   layout();
-  ScrollTrigger.addEventListener('refreshInit', layout);
+  // before every re-measure, put the story back to its first frame: the headline and device are then
+  // measured where they really sit, and the story records its start values from the right state
+  // (measuring mid-story, e.g. after a resize further down the page, misplaced both on the way back)
+  let storyTl = null;
+  ScrollTrigger.addEventListener('refreshInit', () => { if (storyTl) storyTl.progress(0); layout(); });
+  // refreshInit fires while the pinned hero still has its old pinned size, so a resize made further down
+  // the page was measured one step late. Once the refresh is done (real size), check again; if the layout
+  // moved, refresh once more so the story is rebuilt against it.
+  let relayout = false;
+  const heroVars = () => ['--title-pad', '--dev-top', '--dev-w'].map(v => hero.style.getPropertyValue(v)).join('|');
+  ScrollTrigger.addEventListener('refresh', () => {
+    if (relayout) { relayout = false; return; }
+    const p = storyTl ? storyTl.progress() : 0;
+    if (storyTl) storyTl.progress(0);
+    const before = heroVars();
+    layout();
+    if (heroVars() !== before) { relayout = true; ScrollTrigger.refresh(); }
+    else if (storyTl) storyTl.progress(p);
+  });
   let placed = false;
   if (document.fonts) document.fonts.ready.then(() => {
     if (!placed) return;                                // on time: the intro handles placement
@@ -230,6 +253,8 @@
   function runIntro(onDone) {
     // skip if motion is reduced, the page is scrolled, or the slow-load failsafe already showed the text
     const skip = reduceMQ.matches || window.scrollY > window.innerHeight * .4 || window.__introShown;
+    // the boot line has been showing while the model loaded (CSS); hand it to the timeline without a flicker
+    gsap.set(boot, { opacity: skip ? 0 : 1 });
     html.classList.remove('is-intro');
     if (skip) { onDone(); return; }
 
@@ -239,7 +264,6 @@
     Object.assign(cam, BASE); applyCam();
 
     gsap.timeline({ defaults: { ease: 'power3.out' }, onComplete: onDone })
-      .to(boot, { opacity: 1, duration: .3 }, .05)
       .fromTo(bootStatus, { opacity: .25 }, { opacity: 1, duration: .14, repeat: 4, yoyo: true, ease: 'steps(1)' }, .15)
       .call(() => { bootStatus.textContent = 'Online'; }, null, .85)
       .to(boot, { opacity: 0, duration: .35 }, 1.0)
@@ -440,18 +464,23 @@
 
   // wait for the headline font (max 1.5s) so the device is placed once, against final text metrics
   const fontsReady = document.fonts ? Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]) : Promise.resolve();
-  // the device must be on screen before the headline types: wait for the 3D model to render (max 6s)
+  // the device must be fully on screen before the headline types: wait for the 3D model to load and
+  // draw (two frames after its load event); give up only if it errors, the 3D script never arrives, or 28s pass
   const modelReady = new Promise(r => {
-    if (model.loaded) return r();
-    model.addEventListener('load', () => r(), { once: true });
+    const drawn = () => requestAnimationFrame(() => requestAnimationFrame(() => r()));
+    if (model.loaded) return drawn();
+    model.addEventListener('load', drawn, { once: true });
     model.addEventListener('error', () => r(), { once: true });
-    setTimeout(r, 6000);
+    window.addEventListener('load', () => { if (!customElements.get('model-viewer')) r(); }, { once: true });
+    setTimeout(r, 28000);
   });
   Promise.all([fontsReady, modelReady]).then(() => {
   layout();
   placed = true;
   hero.classList.add('is-placed');
   runIntro(() => {
+    unlockScroll();
+    normalizeTouch();
     revealHeadings(null, reduceMQ.matches);
     const mm = gsap.matchMedia();
     mm.add({
@@ -462,13 +491,14 @@
       const { mobile, reduce, fine } = ctx.conditions;
       layout();
       Object.assign(cam, BASE); applyCam();
-      buildStory({ mobile, reduce });
+      storyTl = buildStory({ mobile, reduce });
       buildBench({ mobile, reduce });
       if (!reduce && !mobile) { scanTl = buildScan(mobile); if (window.scrollY < 40) scanTl.play(); }
       const killParallax = (!reduce && fine && !mobile) ? buildParallax() : null;
       return () => {
         if (scanTl) { scanTl.kill(); scanTl = null; }
         if (killParallax) killParallax();
+        storyTl = null;
       };
     });
   });

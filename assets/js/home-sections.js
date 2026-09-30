@@ -1,63 +1,293 @@
 /* EDIO — Homepage sections 04–09 (after the hero story).
    Kept separate from home.js so the approved hero is never affected.
-   Motion is light: problem fragments drift apart slightly; the flow draws itself as you scroll. */
+   Sections 04–07 play on their own, like short clips: each starts when it comes on screen, pauses while
+   off screen, plays once and holds its last frame, then offers a replay. Scrolling never drives them,
+   so nothing here interferes with the hero's pinned story. Works without GSAP. */
 (() => {
   'use strict';
-  const { $, $$ } = window.EDIO;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const ease = t => 1 - Math.pow(1 - t, 3);
+  // progress of a step that runs from `at` for `len` of the clip, 0 → 1
+  const step = (p, at, len) => clamp((p - at) / len);
 
-  const flow = $('[data-flow]');
-  const ins = $$('[data-flow-in]', flow);
-  const wires = $$('[data-flow-wire]', flow);
-  const core = $('[data-flow-core]', flow);
-  const steps = $$('[data-flow-step]', flow);
-
-  // resting state without GSAP or with reduced motion: everything visible
-  const showAll = () => {
-    ins.forEach(el => el.classList.add('is-on'));
-    steps.forEach(el => el.classList.add('is-on'));
-    wires.forEach(w => w.style.setProperty('--draw', 0));
-    core.style.setProperty('--glow', 1);
-    core.style.setProperty('--out-w', '90px');
-  };
-  if (reduce || !window.gsap || !window.ScrollTrigger) { showAll(); return; }
-  gsap.registerPlugin(ScrollTrigger);
-
-  // the hero pins its story only after the 3D model loads; set up after that so positions include the pin
-  const whenHeroPinned = cb => {
-    const t0 = performance.now();
-    (function wait() {
-      if (document.querySelector('.pin-spacer') || performance.now() - t0 > 8000) { cb(); ScrollTrigger.refresh(); }
-      else setTimeout(wait, 150);
-    })();
-  };
-  whenHeroPinned(() => {
-
-  /* 05 flow: sources light → wires draw into EDIO → EDIO glows → steps light in order */
-  const state = { p: 0 };
-  const paint = () => {
-    const p = state.p;
-    ins.forEach((el, i) => el.classList.toggle('is-on', p > .05 + i * .06));
-    wires.forEach((w, i) => w.style.setProperty('--draw', Math.max(0, 1 - (p - .1 - i * .04) / .25).toFixed(3)));
-    const g = Math.min(1, Math.max(0, (p - .42) / .12));
-    core.style.setProperty('--glow', g.toFixed(3));
-    core.style.setProperty('--out-w', Math.round(Math.min(1, Math.max(0, (p - .5) / .15)) * 90) + 'px');
-    steps.forEach((el, i) => el.classList.toggle('is-on', p > .58 + i * .09));
-  };
-  ScrollTrigger.create({
-    trigger: flow, start: 'top 70%', end: 'bottom 75%', scrub: .6,
-    onUpdate: self => { state.p = self.progress; paint(); }
+  /* ==========================================================================
+     Typewriter headings: letters type in when the heading comes into view
+     ========================================================================== */
+  const typers = $$('[data-type]').map(el => {
+    const words = el.textContent.trim().split(/\s+/);
+    el.setAttribute('aria-label', el.textContent.trim());
+    el.innerHTML = words.map(w => `<span class="tw-w" aria-hidden="true">${[...w].map(c => `<span class="ch">${c}</span>`).join('')}</span>`).join(' ');
+    return { el, chars: $$('.ch', el), done: false };
   });
-  paint();
+  const afterOf = el => $$('[data-type-after]', el.closest('section') || document);
 
-  /* 04 problem: fragments drift a little apart as the section passes — scattered, not connected */
-  $$('[data-frag]').forEach(f => {
-    const d = +getComputedStyle(f).getPropertyValue('--d') || 0;
-    const dx = [-14, 16, -12, 14][d] || 0, dy = [-10, -14, 12, 10][d] || 0;
-    gsap.fromTo(f, { x: -dx * .4, y: -dy * .4 }, {
-      x: dx, y: dy, ease: 'none',
-      scrollTrigger: { trigger: '[data-scatter]', start: 'top bottom', end: 'bottom top', scrub: true }
+  function type(t) {
+    if (t.done) return; t.done = true;
+    if (reduce) { t.chars.forEach(c => c.classList.add('on')); afterOf(t.el).forEach(a => a.classList.add('is-in')); return; }
+    const per = 26;
+    t.chars.forEach((c, i) => setTimeout(() => {
+      c.classList.add('on');
+      if (i) t.chars[i - 1].classList.remove('is-caret');
+      c.classList.add('is-caret');
+    }, i * per));
+    const end = t.chars.length * per;
+    setTimeout(() => { t.el.classList.add('is-typed'); afterOf(t.el).forEach(a => a.classList.add('is-in')); }, end + 80);
+    setTimeout(() => t.chars.forEach(c => c.classList.remove('is-caret')), end + 1500);
+  }
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      const t = typers.find(x => x.el === e.target); if (t) type(t); io.unobserve(e.target);
+    }), { threshold: .6 });
+    typers.forEach(t => io.observe(t.el));
+  } else typers.forEach(type);
+
+  /* ==========================================================================
+     Clip player: time drives paint(p), p = 0 → 1 over `duration` ms
+     ========================================================================== */
+  function clip({ section, watch = section, duration, paint, replayIn, onEnd, ready = Promise.resolve() }) {
+    const c = { p: 0, playing: false, visible: false, done: false, started: false };
+    let raf = 0, last = 0, btn = null;
+
+    if (replayIn && !reduce) {
+      btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'replay'; btn.tabIndex = -1;
+      btn.innerHTML = '<i aria-hidden="true">↻</i>Replay';
+      btn.addEventListener('click', () => c.restart());
+      replayIn.append(btn);
+    }
+    const setPlayed = on => {
+      section.classList.toggle('is-played', on);
+      if (btn) btn.tabIndex = on ? 0 : -1;
+    };
+    function tick(now) {
+      raf = 0;
+      if (!c.playing || !c.visible) return;
+      // cap the step so a stalled tab resumes where it left off instead of jumping to the end
+      c.p = clamp(c.p + Math.min(250, now - last) / duration);
+      last = now;
+      paint(c.p);
+      if (c.p >= 1) { c.playing = false; c.done = true; setPlayed(true); if (onEnd) onEnd(); return; }
+      raf = requestAnimationFrame(tick);
+    }
+    const resume = () => { if (!raf && c.playing && c.visible) { last = performance.now(); raf = requestAnimationFrame(tick); } };
+    c.play = () => { if (c.done) return; c.started = true; c.playing = true; resume(); };
+    c.restart = () => { c.p = 0; c.done = false; setPlayed(false); paint(0); c.play(); };
+    // jump to p and hold there (e.g. a timeline node was clicked)
+    c.hold = p => { c.stop(); c.p = clamp(p); paint(c.p); };
+    // end here without repainting (the visitor has taken over)
+    c.stop = () => { c.playing = false; c.done = true; c.started = true; setPlayed(true); };
+    c.repaint = () => paint(c.p);
+
+    if (reduce) { c.done = true; paint(1); if (onEnd) onEnd(); return c; }
+    paint(0);
+    if (!('IntersectionObserver' in window)) { c.visible = true; ready.then(c.play); return c; }
+    // "on screen" = some of the animated part is inside the top three quarters of the viewport
+    new IntersectionObserver(es => es.forEach(e => {
+      c.visible = e.isIntersecting;
+      if (!c.visible) return;
+      if (!c.started) ready.then(() => { if (!c.started) c.play(); });
+      else resume();
+    }), { rootMargin: '0px 0px -25% 0px', threshold: 0 }).observe(watch);
+    return c;
+  }
+
+  /* ==========================================================================
+     04 Scattered fragments: they arrive one by one from far apart, then the broken links appear
+     ========================================================================== */
+  const problem = $('[data-problem]');
+  const scatter = $('[data-scatter]');
+  const frags = $$('[data-frag]');
+  frags.forEach(f => f.addEventListener('pointermove', e => {
+    const r = f.getBoundingClientRect();
+    f.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    f.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  }));
+  const drift = [[-18, -12], [20, -16], [-16, 14], [18, 12]];
+  function paintProblem(p) {
+    const wide = window.innerWidth >= 768;
+    frags.forEach((f, i) => {
+      const k = ease(step(p, .06 + i * .17, .3));
+      const [dx, dy] = wide ? drift[i].map(v => v * 6 * (1 - k)) : [0, 28 * (1 - k)];
+      f.style.translate = `${dx.toFixed(1)}px ${dy.toFixed(1)}px`;
+      f.style.opacity = k.toFixed(3);
+      // a brief glow as each fragment lands
+      f.classList.toggle('is-lit', k > .6 && step(p, .06 + i * .17, .44) < 1);
     });
+    scatter.classList.toggle('is-linked', p >= .86);
+  }
+  const problemClip = problem && scatter && clip({ section: problem, watch: scatter, duration: 4200, paint: paintProblem, replayIn: problem });
+
+  /* ==========================================================================
+     05 Map: inputs connect one by one, EDIO merges them, stages run, the record fills
+     ========================================================================== */
+  const flow = $('[data-flow]');
+  const map = $('[data-map]');
+  const svg = $('[data-map-wires]');
+  const srcs = $$('[data-src]', map);
+  const core = $('[data-core]', map);
+  const coreCount = $('[data-core-count]', map);
+  const stages = $$('[data-stage]', map);
+  const fields = $$('[data-field]');
+  const recState = $('[data-rec-state]');
+  const NS = 'http://www.w3.org/2000/svg';
+  let wires = [];   // { live, pkt, len }
+
+  function buildWires() {
+    svg.innerHTML = '';
+    wires = [];
+    if (getComputedStyle(svg).display === 'none') return;
+    const m = map.getBoundingClientRect();
+    const R = el => { const r = el.getBoundingClientRect(); return { l: r.left - m.left, r: r.right - m.left, t: r.top - m.top, b: r.bottom - m.top, cy: (r.top + r.bottom) / 2 - m.top }; };
+    const c = R(core);
+    const busX = (R(srcs[0]).r + c.l) / 2;
+    const paths = srcs.map(s => { const a = R(s); return `M${a.r} ${a.cy} H${busX} V${c.cy} H${c.l}`; });
+    // core → first stage, then stage to stage along the row
+    const st = stages.map(R);
+    paths.push(`M${c.r} ${c.cy} H${st[0].l}`);
+    for (let i = 0; i < st.length - 1; i++) paths.push(`M${st[i].r} ${st[i].t + 34} H${st[i + 1].l}`);
+    paths.forEach(d => {
+      const base = document.createElementNS(NS, 'path'); base.setAttribute('d', d); base.setAttribute('class', 'w-base');
+      const live = document.createElementNS(NS, 'path'); live.setAttribute('d', d); live.setAttribute('class', 'w-live');
+      const pkt = document.createElementNS(NS, 'circle'); pkt.setAttribute('r', 3.5); pkt.setAttribute('class', 'pkt'); pkt.style.opacity = 0;
+      svg.append(base, live, pkt);
+      const len = live.getTotalLength();
+      live.style.strokeDasharray = len; live.style.strokeDashoffset = len;
+      wires.push({ live, pkt, len });
+    });
+  }
+  // draw wire i to fraction f, with a packet riding its tip
+  function drawWire(i, f) {
+    const w = wires[i]; if (!w) return;
+    w.live.style.strokeDashoffset = w.len * (1 - f);
+    const show = f > 0 && f < 1;
+    w.pkt.style.opacity = show ? 1 : 0;
+    if (show) { const p = w.live.getPointAtLength(w.len * f); w.pkt.setAttribute('cx', p.x); w.pkt.setAttribute('cy', p.y); }
+  }
+  const RECORD_AT = [[0], [1, 2], [3], [4]];   // which record fields each stage fills
+  function paintFlow(p) {
+    // inputs: one every .10 of the clip
+    let merged = 0;
+    srcs.forEach((s, i) => {
+      const f = step(p, i * .1, .08);
+      s.classList.toggle('is-on', f > 0);
+      drawWire(i, f);
+      if (f >= 1) merged++;
+    });
+    coreCount.textContent = merged + ' / 4 inputs' + (merged === 4 ? ' · merged' : '');
+    core.classList.toggle('is-full', merged === 4);
+    core.style.setProperty('--glow', step(p, .3, .14).toFixed(3));
+    // stages: from .46, one every .11
+    stages.forEach((s, i) => {
+      const f = step(p, .46 + i * .11, .07);
+      drawWire(4 + i, f);
+      s.classList.toggle('is-on', f >= 1);
+    });
+    let filled = 0;
+    stages.forEach((s, i) => RECORD_AT[i].forEach(k => {
+      const on = s.classList.contains('is-on');
+      fields[k].classList.toggle('is-on', on);
+      if (on) filled++;
+    }));
+    recState.textContent = merged < 4 ? 'waiting for inputs · ' + merged + ' / 4'
+      : filled === 0 ? 'merging inputs'
+      : filled < 5 ? 'forming · ' + filled + ' / 5 fields' : 'validated · reusable';
+  }
+  // hover an input: its path lights up
+  srcs.forEach((s, i) => {
+    s.addEventListener('pointerenter', () => { s.classList.add('is-hot'); if (wires[i]) wires[i].live.style.stroke = 'var(--cyan-2)'; });
+    s.addEventListener('pointerleave', () => { s.classList.remove('is-hot'); if (wires[i]) wires[i].live.style.stroke = ''; });
   });
+  // wires are measured from the laid-out map, so wait for fonts before the clip can start
+  const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+  const flowClip = clip({
+    section: flow, watch: map, duration: 4200, paint: paintFlow, replayIn: flow,
+    ready: fontsReady.then(() => { buildWires(); if (flowClip) flowClip.repaint(); }),
   });
+
+  /* ==========================================================================
+     06 Timeline: the rail fills and categories light in turn; clicking a node jumps there
+     ========================================================================== */
+  const cats = $('[data-cats]');
+  const tlFill = $('[data-tl-fill]');
+  const tlItems = $$('[data-tl-item]');
+  function paintTl(p) {
+    const q = clamp(p / .85);
+    tlFill.style.setProperty('--p', q.toFixed(3));
+    tlItems.forEach((it, i) => it.classList.toggle('is-on', q >= i / 3 - .001));
+  }
+  const tlClip = clip({ section: cats, watch: $('[data-tl]', cats), duration: 5200, paint: paintTl, replayIn: cats });
+  $$('[data-tl-node]').forEach((n, i) => n.addEventListener('click', () => tlClip.hold((i / 3) * .85)));
+
+  /* ==========================================================================
+     07 SmartClone: a guided tour of the device, then it rests; tilt toward the cursor (as on edio.in)
+     ========================================================================== */
+  const products = $('[data-products]');
+  const stage = $('[data-scx]');
+  const tilt = $('[data-scx-tilt]');
+  const float = $('[data-scx-float]');
+  const model = $('[data-scx-model]');
+  if (stage && !reduce) {
+    stage.addEventListener('pointermove', e => {
+      const r = stage.getBoundingClientRect();
+      const nx = (e.clientX - r.left) / r.width - .5, ny = (e.clientY - r.top) / r.height - .5;
+      tilt.style.setProperty('--ry', (nx * 8).toFixed(2) + 'deg');
+      tilt.style.setProperty('--rx', (-ny * 6).toFixed(2) + 'deg');
+    });
+    stage.addEventListener('pointerleave', () => { tilt.style.setProperty('--ry', '0deg'); tilt.style.setProperty('--rx', '0deg'); });
+  }
+  if (products && model) {
+    // the still render stays until the 3D model has actually drawn
+    const modelReady = new Promise(r => {
+      if (model.loaded) return r(true);
+      model.addEventListener('load', () => r(true), { once: true });
+      model.addEventListener('error', () => r(false), { once: true });
+    });
+    modelReady.then(ok => { if (ok) float.classList.add('is-live'); });
+
+    // tour order runs left to right across the faceplate
+    const TOUR = ['hotspot-prog', 'hotspot-screen', 'hotspot-keys', 'hotspot-status', 'hotspot-ir', 'hotspot-iface'];
+    const hots = TOUR.map(s => $(`[slot="${s}"]`, model)).filter(Boolean);
+    const REST = { theta: -18, phi: 52 };
+    const LEAD = .06, TAIL = .1;   // a beat before the first marker, and time to settle after the last
+    let lastHot = -1;
+    const orbit = (theta, phi) => model.setAttribute('camera-orbit', `${theta.toFixed(2)}deg ${phi.toFixed(2)}deg 78%`);
+    function paintTour(p) {
+      // camera sways gently across the device and comes back to rest
+      const sway = Math.sin(clamp(p / (1 - TAIL)) * Math.PI * 2);
+      const lift = Math.sin(clamp(p / (1 - TAIL)) * Math.PI);
+      orbit(REST.theta + sway * 16, REST.phi - lift * 8);
+      const k = (p - LEAD) / (1 - LEAD - TAIL);
+      const i = k >= 0 && k < 1 ? Math.floor(k * hots.length) : -1;
+      if (i === lastHot) return;
+      lastHot = i;
+      hots.forEach((h, j) => h.classList.toggle('is-on', j === i));
+    }
+    const tour = clip({
+      section: products, watch: stage, duration: hots.length * 2400 + 1400, paint: paintTour,
+      replayIn: stage,
+      // without a 3D model there is nothing to tour: never start
+      ready: modelReady.then(ok => ok || new Promise(() => {})),
+    });
+    // the visitor takes over: stop the tour and leave the camera where they put it
+    model.addEventListener('camera-change', e => {
+      if (!e.detail || e.detail.source !== 'user-interaction' || tour.done) return;
+      tour.stop();
+      hots.forEach(h => h.classList.remove('is-on'));
+      lastHot = -1;
+    });
+  }
+
+  /* ==========================================================================
+     Layout changes: re-measure the map wires and repaint where each clip is
+     ========================================================================== */
+  let resizing = 0;
+  window.addEventListener('resize', () => {
+    cancelAnimationFrame(resizing);
+    resizing = requestAnimationFrame(() => { buildWires(); flowClip.repaint(); if (problemClip) problemClip.repaint(); });
+  });
+  window.addEventListener('load', () => { buildWires(); flowClip.repaint(); });
 })();

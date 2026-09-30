@@ -329,6 +329,11 @@
 .is-intro .stage-light,
 .is-intro .stage-floor { opacity: 0; }
 .is-intro .hero-title { visibility: hidden; }
+/* held still until the model has rendered and the headline has typed (the gutter stays, so nothing shifts) */
+html { scrollbar-gutter: stable; background: var(--void); }
+html.is-locked { overflow: hidden; }
+/* while the model loads, the boot line is already up, so the first frame isn't empty */
+.is-intro .boot { opacity: 1; transition: opacity .4s ease .2s; }
 
 /* ==========================================================================
    RESPONSIVE
