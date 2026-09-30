@@ -69,14 +69,16 @@
     }
   }
   function fitHeadline() {
-    const [l1, la, lb] = lines;
-    [l1, la, lb].forEach(el => { el.style.fontSize = ''; });
+    // phones: one size for every word, set so the longest word ("intelligence") fills the column;
+    // the rest wraps naturally at that size, giving even lines instead of mixed sizes
+    title.style.fontSize = '';
     if (hero.clientWidth >= 768) return;
+    const la = lines[1];
     const avail = title.clientWidth;
-    const inkWidth = el => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; };
-    const fit = el => { el.style.fontSize = '100px'; const s = Math.floor(100 * avail / inkWidth(el) * 10) / 10; el.style.fontSize = s + 'px'; return s; };
-    fit(l1);
-    lb.style.fontSize = fit(la) + 'px';
+    title.style.fontSize = '100px';
+    const r = document.createRange(); r.selectNodeContents(la);
+    const s = Math.min(84, Math.floor(100 * avail / r.getBoundingClientRect().width * 10) / 10);
+    title.style.fontSize = s + 'px';
   }
   function layoutHero() {
     fitHeadline();
