@@ -24,6 +24,19 @@
   const boot = $('[data-boot]');
   const bootStatus = $('[data-boot-status]');
   const hotspots = $$('[data-hs]', hero);
+  // the 3D viewer (1.1 MB script + 1.5 MB model) loads only after the headline is up, so slow phones and
+  // slow networks get a smooth intro first; the still picture shows until the model has rendered
+  let viewerRequested = false;
+  function loadViewer() {
+    if (viewerRequested) return; viewerRequested = true;
+    const sc = document.createElement('script');
+    sc.type = 'module'; sc.src = 'assets/js/vendor/model-viewer.min.js';
+    document.head.appendChild(sc);
+  }
+  window.addEventListener('scroll', loadViewer, { once: true, passive: true });
+  setTimeout(loadViewer, 6000);                         // fallback if nothing else asks for it
+  // once the real 3D model has rendered, the still picture steps aside
+  model.addEventListener('load', () => device.classList.add('is-live'), { once: true });
   const hsDisplay = $('[data-hs-display]', hero);
   const caps = $$('[data-cap]', hero);
   const steps = $$('[data-steps] li', hero);
@@ -155,7 +168,7 @@
     leader.setAttribute('d', cx > ax ? `M${ax} ${ay} H${mx} V${cy} H${cx}` : `M${ax} ${ay} V${c.bottom - hr.top}`);
   }
 
-  if (!window.gsap || !window.ScrollTrigger) { html.classList.remove('is-intro'); return; }
+  if (!window.gsap || !window.ScrollTrigger) { html.classList.remove('is-intro'); hero.classList.add('is-placed'); return; }
   gsap.registerPlugin(ScrollTrigger);
   ScrollTrigger.config({ ignoreMobileResize: true });
   // touch devices: ScrollTrigger handles the scroll so pinned scenes never jump when the address bar moves
@@ -194,22 +207,47 @@
   function layout() { layoutHero(); placeHorizon(); layoutBench(); }
   layout();
   ScrollTrigger.addEventListener('refreshInit', layout);
-  if (document.fonts) document.fonts.ready.then(() => ScrollTrigger.refresh());
+  let placed = false;
+  if (document.fonts) document.fonts.ready.then(() => {
+    if (!placed) return;                                // on time: the intro handles placement
+    gsap.to([rig, title], { opacity: 0, duration: .2, onComplete() { ScrollTrigger.refresh(); gsap.to([rig, title], { opacity: 1, duration: .5 }); } });
+  });
 
   /* ==========================================================================
      INTRO — the stage lights, the headline sets, the device rises (~2.6s)
      ========================================================================== */
   const titleWords = lines.flatMap(l => split(l));
+  // one span per letter inside each word, for the typewriter intro
+  const titleChars = titleWords.flatMap(w => {
+    const t = w.textContent; w.textContent = '';
+    return [...t].map(ch => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = ch; w.appendChild(s); return s; });
+  });
   let scanTl = null;
 
+  function typeHeadline() {
+    const per = .042;                                   // seconds per letter
+    const tl = gsap.timeline();
+    titleChars.forEach((ch, i) => {
+      tl.call(() => {
+        ch.style.opacity = 1;
+        titleChars.forEach(o => o.classList.remove('is-caret'));
+        ch.classList.add('is-caret');
+      }, null, i * per);
+    });
+    // cursor blinks at the end, then leaves
+    tl.call(() => title.classList.add('is-typed'), null, titleChars.length * per)
+      .call(() => titleChars.forEach(o => o.classList.remove('is-caret')), null, titleChars.length * per + 1.6);
+    return tl;
+  }
+
   function runIntro(onDone) {
-    const skip = reduceMQ.matches || window.scrollY > window.innerHeight * .4;
+    // skip if motion is reduced, the page is scrolled, or the slow-load failsafe already showed the text
+    const skip = reduceMQ.matches || window.scrollY > window.innerHeight * .4 || window.__introShown;
     html.classList.remove('is-intro');
     if (skip) { onDone(); return; }
 
-    const d = lineDelays(titleWords, .1, .03);
     gsap.set([header, light, floor], { opacity: 0 });
-    gsap.set(titleWords, { opacity: 0, filter: 'blur(10px)' });
+    gsap.set(titleChars, { opacity: 0 });
     gsap.set(rig, { opacity: 0 });
     Object.assign(cam, BASE); applyCam();
 
@@ -220,10 +258,9 @@
       .to(boot, { opacity: 0, duration: .35 }, 1.0)
       .to(light, { opacity: 1, duration: 1.4, ease: 'power2.inOut' }, .55)
       .to(floor, { opacity: 1, duration: 1.4, ease: 'power2.inOut' }, .7)
-      // soft focus-in: words sharpen and brighten in reading order; the device eases up after them
-      .to(titleWords, { opacity: 1, filter: 'blur(0px)', duration: 1.6, ease: 'sine.out', delay: i => d[i] * 1.6,
-        onComplete() { gsap.set(this.targets(), { clearProps: 'filter' }); } }, .9)
-      .to(rig, { opacity: 1, duration: 1.8, ease: 'sine.inOut' }, 1.3)
+      // typewriter: one letter at a time with a cursor riding the last typed letter; the device fades up alongside
+      .add(typeHeadline(), .6)
+      .to(rig, { opacity: 1, duration: 1.8, ease: 'sine.inOut' }, 1.4)
       .to(header, { opacity: 1, duration: .8 }, 1.5);
   }
 
@@ -418,8 +455,10 @@
   const fontsReady = document.fonts ? Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]) : Promise.resolve();
   fontsReady.then(() => {
   layout();
+  placed = true;
   hero.classList.add('is-placed');
   runIntro(() => {
+    setTimeout(loadViewer, 300);                      // after the typewriter has finished
     revealHeadings(null, reduceMQ.matches);
     const mm = gsap.matchMedia();
     mm.add({
