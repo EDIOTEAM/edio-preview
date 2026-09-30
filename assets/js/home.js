@@ -17,10 +17,6 @@
   const model = $('[data-model]');
   const title = $('[data-hero-title]');
   const lines = $$('[data-split-line]', title);
-  const foot = $('[data-hero-foot]');
-  const fades = $$('[data-hero-fade]', hero);
-  const stats = $('[data-stats]');
-  const cue = $('[data-cue]');
   const light = $('[data-light]');
   const floor = $('[data-floor]');
   const boot = $('[data-boot]');
@@ -55,19 +51,6 @@
     hero.style.setProperty('--dev-top', Math.round(top) + 'px');
     return top;
   }
-  function keepGap() {
-    // device base ~72% down its box, tag ~80%; keep at least 40px (28px on phones) above the bottom bar
-    const hr = hero.getBoundingClientRect();
-    const footTop = foot.getBoundingClientRect().top - hr.top;
-    const gap = hero.clientWidth < 768 ? 28 : 40;
-    const boxH = device.offsetHeight, top = device.offsetTop;
-    const over = top + .82 * boxH + gap - footTop;
-    if (over > 0) {
-      const w = device.offsetWidth * Math.max(.7, 1 - over / (.82 * boxH));
-      hero.style.setProperty('--dev-w', Math.round(w) + 'px');
-      placeDevice();
-    }
-  }
   function fitHeadline() {
     // phones: one size for every word, set so the longest word ("intelligence") fills the column;
     // the rest wraps naturally at that size, giving even lines instead of mixed sizes
@@ -84,18 +67,26 @@
     fitHeadline();
     hero.style.removeProperty('--title-pad');
     hero.style.removeProperty('--dev-w');
-    const top = placeDevice();
-    if (hero.clientWidth > hero.clientHeight) { keepGap(); return; }   // landscape: headline hangs from the header
-    // portrait (phones, tablets): centre headline + device together in the space above the text block
     const hr = hero.getBoundingClientRect();
     const headerH = header.offsetHeight;
-    const titleTop = lines[0].getBoundingClientRect().top - hr.top;
-    const base = top + .74 * device.offsetHeight;
-    const room = foot.getBoundingClientRect().top - hr.top - headerH;
-    const shift = Math.max(0, (room - (base - titleTop)) / 2 - (titleTop - headerH));
-    hero.style.setProperty('--title-pad', Math.round(parseFloat(getComputedStyle(title).paddingTop) + shift) + 'px');
+    const room = hero.clientHeight - headerH;
+    const measure = () => {
+      const top = placeDevice();
+      const titleTop = lines[0].getBoundingClientRect().top - hr.top;
+      return { top, titleTop, h: top + .74 * device.offsetHeight - titleTop };  // headline top → device base
+    };
+    let m = measure();
+    // if headline + device are taller than ~86% of the screen, shrink the device until they fit
+    if (m.h > room * .86) {
+      const boxH = device.offsetHeight;
+      const k = Math.max(.6, 1 - (m.h - room * .86) / (.74 * boxH));
+      hero.style.setProperty('--dev-w', Math.round(device.offsetWidth * k) + 'px');
+      m = measure();
+    }
+    // centre the pair: shift the headline down by half the leftover space (a touch above true centre reads better)
+    const shift = (room - m.h) * .46 - (m.titleTop - headerH);
+    hero.style.setProperty('--title-pad', Math.max(headerH + 12, Math.round(parseFloat(getComputedStyle(title).paddingTop) + shift)) + 'px');
     placeDevice();
-    keepGap();
   }
 
   /* ---------- Dataset tiles ---------- */
@@ -176,12 +167,10 @@
     if (skip) { onDone(); return; }
 
     const d = lineDelays(titleWords, .1, .03);
-    gsap.set([header, stats, cue, ...fades, light, floor], { opacity: 0 });
+    gsap.set([header, light, floor], { opacity: 0 });
     gsap.set(titleWords, { yPercent: 105 });
-    gsap.set(rig, { opacity: 0, y: 40 });
-    gsap.set(fades, { y: 12 });
-    gsap.set(stats, { y: 10 });
-    Object.assign(cam, { theta: BASE.theta - 16, phi: 70, r: 118 }); applyCam();
+    gsap.set(rig, { opacity: 0, y: 16 });
+    Object.assign(cam, BASE); applyCam();
 
     gsap.timeline({ defaults: { ease: 'power3.out' }, onComplete: onDone })
       .to(boot, { opacity: 1, duration: .3 }, .05)
@@ -191,12 +180,8 @@
       .to(light, { opacity: 1, duration: 1.4, ease: 'power2.inOut' }, .55)
       .to(floor, { opacity: 1, duration: 1.4, ease: 'power2.inOut' }, .7)
       .to(titleWords, { yPercent: 0, duration: 1.1, ease: 'expo.out', delay: i => d[i] }, 1.0)
-      .to(rig, { opacity: 1, y: 0, duration: 1.4, ease: 'power3.out' }, 1.25)
-      .to(cam, { ...BASE, duration: 1.8, ease: 'power3.out', onUpdate: applyCam }, 1.25)
-      .to(header, { opacity: 1, duration: .8 }, 1.5)
-      .to(fades, { opacity: 1, y: 0, duration: .7, stagger: .08 }, 1.85)
-      .to(stats, { opacity: 1, y: 0, duration: .7 }, 2.05)
-      .to(cue, { opacity: 1, duration: .6 }, 2.3);
+      .to(rig, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 1.25)
+      .to(header, { opacity: 1, duration: .8 }, 1.5);
   }
 
   /* ==========================================================================
@@ -264,8 +249,6 @@
 
     // --- 01 Physical repair: the headline lifts away; the camera looks down at the faceplate ---
     tl.to(title, { y: lift, opacity: 0, duration: 1.8, ease: 'power1.in' }, 0)
-      .to(foot, { opacity: 0, y: 30, duration: .8 }, 0)
-      .to('[data-device-tag]', { opacity: 0, duration: .5 }, 0)
       .to(rig, { y: toCentre, scale: mobile ? 1.05 : 1.12, duration: 2.2, ease: 'power1.inOut' }, 0)
       .to(cam, { theta: 0, phi: 16, r: 92, duration: 2.2, ease: 'power1.inOut', onUpdate: applyCam }, 0)
       .to(light, { opacity: .7, duration: 2 }, 0)
@@ -295,7 +278,6 @@
         scaleY: () => targetTile.offsetHeight / caseEl.offsetHeight,
         duration: 1.1, ease: 'power3.inOut'
       }, 6.0)
-      .to(rig, { opacity: mobile ? .1 : .16, duration: 1.2 }, 6.0)
       .fromTo(coldTiles, { opacity: 0 }, { opacity: 1, duration: .3, stagger: .03 }, 6.5)
       .fromTo(targetTile, { opacity: 0 }, { opacity: 1, duration: .2 }, 7.05)
       .to(caseEl, { opacity: 0, duration: .2 }, 7.1)
@@ -303,8 +285,6 @@
       .fromTo(caps[2], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .7, ease: 'power2.out' }, 6.3)
       .to({}, { duration: .8 }, 8.2);
 
-    // phones: the case card sits over the device, so the device steps back while it is read
-    if (mobile) tl.to(rig, { opacity: .15, duration: .6 }, 3.3);
 
     return tl;
   }
