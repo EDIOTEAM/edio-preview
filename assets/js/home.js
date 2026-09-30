@@ -246,8 +246,8 @@
       .to(light, { opacity: 1, duration: 1.4, ease: 'power2.inOut' }, .55)
       .to(floor, { opacity: 1, duration: 1.4, ease: 'power2.inOut' }, .7)
       // typewriter: one letter at a time with a cursor riding the last typed letter; the device fades up alongside
-      .add(typeHeadline(), .6)
-      .to(rig, { opacity: 1, duration: 1.8, ease: 'sine.inOut' }, 1.4)
+      .to(rig, { opacity: 1, duration: 1.2, ease: 'sine.inOut' }, .5)      // the device arrives first
+      .add(typeHeadline(), 1.5)                                              // then the headline types in
       .to(header, { opacity: 1, duration: .8 }, 1.5);
   }
 
