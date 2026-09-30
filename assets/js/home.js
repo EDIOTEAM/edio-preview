@@ -66,12 +66,13 @@
     title.style.fontSize = s + 'px';
   }
   // phones, steps 2–3: where the small device sits, and the band below it for the case card / dataset
+  const PHONE_SMALL = window.innerHeight < 780 ? .58 : .66;                            // device scale on phones during steps 2–3
   const phoneBand = () => {
     const H = hero.clientHeight, headerH = header.offsetHeight;
     const capH = Math.max(...caps.map(el => el.offsetHeight));
     const capTop = H - 64 - capH;
-    const devC = headerH + H * .13;                    // centre of the small device
-    const top = Math.round(devC + .3 * device.offsetHeight * .5 + 40);
+    const devC = headerH + H * .145;                   // centre of the small device
+    const top = Math.round(devC + .3 * device.offsetHeight * PHONE_SMALL + 40);
     return { devC, top, room: capTop - 16 - top };
   };
   function placePhoneBand() {
@@ -298,10 +299,15 @@
         .to(cam, { theta: 0, phi: 22, r: 94, duration: 2.2, ease: 'power1.inOut', onUpdate: applyCam }, 0)
         .fromTo(caps[0], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .8, ease: 'power2.out' }, 1.5)
         .fromTo(stepsBox, { opacity: 0 }, { opacity: 1, duration: .6 }, 1.5)
+      // the device never stops: every bit of scroll turns it a little further, with a slow lift and tilt
+        .to(cam, { theta: 22, phi: 30, duration: 0.8, ease: 'sine.inOut', onUpdate: applyCam }, 2.2)
+        .to(cam, { theta: -24, phi: 42, r: 96, duration: 2.6, ease: 'sine.inOut', onUpdate: applyCam }, 3.0)
+        .to(cam, { theta: 28, phi: 34, r: 94, duration: 3.4, ease: 'sine.inOut', onUpdate: applyCam }, 5.6)
+        .to(rig, { rotation: 2.5, duration: 2.6, ease: 'sine.inOut' }, 3.0)
+        .to(rig, { rotation: -2.5, duration: 3.4, ease: 'sine.inOut' }, 5.6)
       // 02
         .to(caps[0], { opacity: 0, y: -16, duration: .5 }, 3.0)
-        .to(rig, { y: upSmall, scale: .5, duration: 1.1, ease: 'power2.inOut' }, 3.0)
-        .to(cam, { phi: 34, duration: 1.1, ease: 'power2.inOut', onUpdate: applyCam }, 3.0)
+        .to(rig, { y: upSmall, scale: PHONE_SMALL, duration: 1.1, ease: 'power2.inOut' }, 3.0)
         .fromTo(caseEl, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .6, ease: 'power2.out' }, 3.8)
         .fromTo(caseRows, { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: .35, stagger: .16, ease: 'power2.out' }, 3.95)
         .fromTo(caps[1], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .7, ease: 'power2.out' }, 3.7)
