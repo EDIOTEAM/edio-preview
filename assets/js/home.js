@@ -281,7 +281,7 @@
         scaleY: () => targetTile.offsetHeight / caseEl.offsetHeight,
         duration: 1.1, ease: 'power3.inOut'
       }, 6.0)
-      .to(rig, { opacity: mobile ? .1 : .22, x: () => mobile ? 0 : hero.clientWidth * .22, duration: 1.2 }, 6.0)
+      .to(rig, { opacity: mobile ? .1 : .16, duration: 1.2 }, 6.0)
       .fromTo(coldTiles, { opacity: 0 }, { opacity: 1, duration: .3, stagger: .03 }, 6.5)
       .fromTo(targetTile, { opacity: 0 }, { opacity: 1, duration: .2 }, 7.05)
       .to(caseEl, { opacity: 0, duration: .2 }, 7.1)

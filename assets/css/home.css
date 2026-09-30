@@ -197,7 +197,6 @@
 .cap--r { left: auto; right: var(--pad); text-align: right; }
 .cap--r .kicker { justify-content: flex-end; }
 .cap--r p:not(.kicker) { margin-left: auto; }
-.dataset--l { left: var(--pad) !important; }
 .cap .fine { margin-top: 18px; font: 400 10.5px var(--font-mono) !important; letter-spacing: .12em; text-transform: uppercase; color: var(--text-mute) !important; }
 .steps {
   position: absolute; right: var(--pad); bottom: 30px; display: flex; gap: 28px; opacity: 0;
