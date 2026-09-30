@@ -16,14 +16,14 @@
 <meta property="og:image:height" content="629">
 <meta property="og:image:alt" content="A technician repairing a TV mainboard at an electronics bench">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#071923">
+<meta name="theme-color" content="#05090c">
 <meta name="robots" content="noindex">
 <link rel="icon" href="assets/img/favicon.png">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="assets/img/intel-bench.webp">
+<link rel="preload" as="image" href="assets/img/home/smartclone-front.webp">
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/home.css">
 <script>
@@ -68,159 +68,104 @@
 
 <main id="main">
 
-<!-- ============ HERO + STORY (one pinned scene) ============ -->
+<!-- ============ HERO + STORY (one pinned stage around the real SmartClone) ============ -->
 <section class="hero" data-hero aria-label="Introduction">
 
-  <!-- Visual scene: scaled on scroll, layered for parallax -->
-  <div class="scene" data-scene aria-hidden="true">
-    <div class="px px-bg" data-px="8">
-      <div class="plate" data-plate>
-        <img class="plate-img" src="assets/img/intel-bench.webp" alt="" width="1672" height="941" fetchpriority="high">
-        <img class="plate-img plate-img--sharp" src="assets/img/intel-bench.webp" alt="" width="1672" height="941">
+  <!-- stage: spotlight, floor and grain; no photo — the product is the image -->
+  <div class="stage" aria-hidden="true">
+    <i class="stage-light" data-light></i>
+    <i class="stage-floor" data-floor></i>
+    <i class="stage-grain"></i>
+  </div>
+
+  <!-- boot line, shown only while the intro runs -->
+  <p class="boot" data-boot aria-hidden="true"><span>EDIO / Repair intelligence system</span><span data-boot-status>Initializing…</span></p>
+
+  <div class="container hero-inner">
+    <h1 class="hero-title" data-hero-title>
+      <span class="ht-line" data-split-line>Building the repair</span>
+      <span class="ht-line" data-split-line>intelligence layer.</span>
+    </h1>
+
+    <!-- EDIO's own SmartClone model (same file as edio.in); the poster is a transparent render of this exact view -->
+    <div class="device" data-device>
+      <div class="device-rig" data-rig>
+      <model-viewer class="device-model" data-model
+        src="assets/models/smartclone-3d.glb"
+        poster="assets/img/home/smartclone-front.webp"
+        alt="SmartClone, EDIO's standalone TV-board programming and diagnostic tool"
+        camera-orbit="0deg 62deg 96%" field-of-view="24deg"
+        environment-image="neutral" exposure="0.9"
+        shadow-intensity="1.2" shadow-softness="0.7"
+        interaction-prompt="none" interpolation-decay="1" disable-zoom disable-pan disable-tap
+        loading="eager" reveal="auto">
+        <!-- part callouts: model-space positions read from the model itself -->
+        <div class="hs hs--l" slot="hotspot-isp" data-position="-0.0554m 0.0436m 0.0112m" data-normal="0m 1m 0m" data-hs><i></i><span>ISP port <b>24Cxx · 25xx</b></span></div>
+        <div class="hs hs--up hs--l hs--keep" slot="hotspot-display" data-position="-0.0041m 0.0386m -0.0029m" data-normal="0m 1m 0m" data-hs data-hs-display><i></i><span>Display <b>EEPROM read · verify</b></span></div>
+        <div class="hs" slot="hotspot-ir" data-position="0.0554m 0.0374m -0.0198m" data-normal="0m 1m 0m" data-hs><i></i><span>IR <b>38 kHz</b></span></div>
+        <div class="hs hs--down" slot="hotspot-buttons" data-position="-0.0005m 0.045m 0.0477m" data-normal="0m 1m 0m" data-hs><i></i><span>Controls <b>Up · OK · Down</b></span></div>
+      </model-viewer>
       </div>
+      <p class="device-tag" data-device-tag>SmartClone SC—1 <span>Shipping now</span></p>
     </div>
 
-    <div class="px px-ov" data-px="14">
-      <div class="plate" data-plate>
-        <svg class="traces" viewBox="0 0 1672 941" preserveAspectRatio="none">
-          <defs>
-            <g id="trace-set">
-              <!-- board ⇄ scope -->
-              <path d="M968 574 H900 L870 544 H760 L742 526 V470"/>
-              <!-- board ⇄ laptop -->
-              <path d="M946 590 H846 L818 618 H560 L528 586 V520 H470"/>
-              <!-- board bus -->
-              <path d="M900 600 H1010 L1030 580 H1064"/>
-              <path d="M920 612 H1040 L1060 592 H1120 L1150 562 H1210"/>
-              <path d="M880 560 L900 540 H990 L1010 520 H1048"/>
-              <!-- board ⇄ microscope -->
-              <path d="M1002 560 V470 L982 450 V380"/>
-              <!-- lower bus -->
-              <path d="M930 628 H1080 L1100 648 H1230"/>
-              <path d="M860 640 H1000 L1020 660 H1160"/>
-            </g>
-            <g id="trace-pads">
-              <circle cx="742" cy="470" r="3.5"/><circle cx="470" cy="520" r="3.5"/>
-              <circle cx="1064" cy="580" r="3"/><circle cx="1210" cy="562" r="3"/>
-              <circle cx="1048" cy="520" r="3"/><circle cx="982" cy="380" r="3.5"/>
-              <circle cx="1230" cy="648" r="3"/><circle cx="1160" cy="660" r="3"/>
-            </g>
-          </defs>
-          <g class="traces-base"><use href="#trace-set"/><use href="#trace-pads" class="pads"/></g>
-        </svg>
-        <svg class="traces traces--lit" viewBox="0 0 1672 941" preserveAspectRatio="none">
-          <g class="traces-glow"><use href="#trace-set"/><use href="#trace-pads" class="pads"/></g>
-        </svg>
-      </div>
-    </div>
-
-    <div class="px px-lb" data-px="18">
-      <div class="plate" data-plate>
-        <!-- positions in image space: left = x/1672, top = y/941 -->
-        <div class="mk mk--focus mk--left" data-mk style="left:58.6%;top:61%">
-          <i class="mk-dot"></i><i class="mk-ring"></i>
-          <span class="mk-label">Board <b>T-CON</b></span>
-        </div>
-        <div class="mk" data-mk style="left:63.7%;top:61.2%">
-          <i class="mk-dot"></i><i class="mk-ring"></i>
-          <span class="mk-label">Probe <b>Active</b></span>
-        </div>
-        <div class="mk mk--left" data-mk style="left:39.2%;top:45.2%">
-          <i class="mk-dot"></i><i class="mk-ring"></i>
-          <span class="mk-label">Measurement <b>Live</b></span>
-        </div>
-        <div class="mk mk--left" data-mk style="left:22.8%;top:43.6%">
-          <i class="mk-dot"></i><i class="mk-ring"></i>
-          <span class="mk-label">Case <b>Logging</b></span>
-        </div>
-        <div class="mk mk--up" data-mk style="left:58.7%;top:40.4%">
-          <i class="mk-dot"></i><i class="mk-ring"></i>
-          <span class="mk-label">Read <b>8,192 B</b></span>
+    <!-- one bottom bar: the offer on the left, three facts read left to right -->
+    <div class="hero-foot" data-hero-foot>
+      <div class="hero-lede">
+        <p class="hero-sub" data-hero-fade>Every repair, captured and made useful for the next one.</p>
+        <div class="hero-cta" data-hero-fade>
+          <a class="btn btn-solid btn-sm" href="contact.html">Partner with EDIO <i aria-hidden="true">→</i></a>
+          <a class="text-link" href="#how">How it works <i aria-hidden="true">→</i></a>
         </div>
       </div>
+      <dl class="stats" data-stats>
+        <div><span class="st-n">01</span><dt>7</dt><dd>repair modes, standalone</dd></div>
+        <div><span class="st-n">02</span><dt>33</dt><dd>PMIC chips supported</dd></div>
+        <div><span class="st-n">03</span><dt>700+</dt><dd>technicians at one training day</dd></div>
+      </dl>
+      <a class="cue" href="#how" data-cue>Scroll <i aria-hidden="true">↓</i></a>
     </div>
   </div>
 
-  <!-- Legibility shading (not scaled) -->
-  <div class="hero-shade" aria-hidden="true"></div>
-
-  <!-- Engineering frame lines -->
-  <div class="frame-lines" aria-hidden="true">
-    <i class="fl fl-h fl-h1"></i><i class="fl fl-h fl-h2"></i>
-    <i class="fl fl-v fl-v1"></i><i class="fl fl-v fl-v2"></i><i class="fl fl-v fl-v3"></i>
-  </div>
-
-  <!-- Repair scan -->
-  <div class="scan" aria-hidden="true" data-scan><span class="scan-tag">Scan</span></div>
-
-  <!-- Story overlays (captured information → structured data) -->
+  <!-- story overlays: physical repair → captured information → structured data -->
   <div class="story" aria-hidden="true">
     <svg class="leader" data-leader><path d="M0 0" pathLength="1"/></svg>
-
     <div class="case" data-case>
-      <div class="case-body" data-case-body>
-        <div class="case-head"><span>Repair case</span><span class="case-state">● structured</span></div>
-        <dl class="case-rows">
-          <div class="case-row"><dt>Symptom</dt><dd>Picture split in two halves</dd></div>
-          <div class="case-row"><dt>Measured</dt><dd>T-CON EEPROM · division byte wrong</dd></div>
-          <div class="case-row"><dt>Action</dt><dd>Division 1 → 2 · written</dd></div>
-          <div class="case-row"><dt>Outcome</dt><dd>Verified by read-back</dd></div>
-        </dl>
-      </div>
+      <div class="case-head"><span>Repair case</span><span class="case-state">● structured</span></div>
+      <dl class="case-rows">
+        <div class="case-row"><dt>Device</dt><dd>TV · Sony · 55″</dd></div>
+        <div class="case-row"><dt>Symptom</dt><dd>Picture split in two halves</dd></div>
+        <div class="case-row"><dt>Measured</dt><dd>T-CON EEPROM · division byte wrong</dd></div>
+        <div class="case-row"><dt>Action</dt><dd>Division 1 → 2 · written</dd></div>
+        <div class="case-row"><dt>Outcome</dt><dd>Verified by read-back</dd></div>
+      </dl>
     </div>
-
-    <div class="dataset" data-dataset></div>
+    <div class="dataset dataset--l" data-dataset></div>
   </div>
 
-  <!-- Hero copy -->
-  <div class="container hero-inner">
-    <p class="sys" data-sys>
-      <span class="sys-a">EDIO / Repair intelligence system</span>
-      <span class="sys-b" data-sys-status>Initializing…</span>
-    </p>
-
-    <div class="hero-copy" data-hero-copy>
-      <h1 class="hero-title" data-split data-px-text="3">Building the repair intelligence layer.</h1>
-      <p class="hero-sub" data-reveal>Every repair, captured and made useful for the next one.</p>
-      <div class="hero-cta" data-hero-cta>
-        <a class="btn btn-solid" href="contact.html" data-reveal>Partner with EDIO <i aria-hidden="true">→</i></a>
-        <a class="btn btn-line" href="#how" data-reveal>How it works <i aria-hidden="true">→</i></a>
-      </div>
+  <div class="container captions" id="how">
+    <div class="cap" data-cap>
+      <p class="kicker"><span>01</span> Physical repair</p>
+      <h2>Repair is where intelligence begins.</h2>
+      <p>Every repair holds four signals. Today they live in a technician's head or a notebook — and leave with them.</p>
     </div>
-
-    <!-- Story captions -->
-    <div class="captions" id="how">
-      <div class="cap" data-cap>
-        <p class="kicker"><span>01</span> Physical repair</p>
-        <h2>Repair is where intelligence begins.</h2>
-        <p>Every repair holds four signals. Today they live in a technician's head or a notebook — and leave with them.</p>
-      </div>
-      <div class="cap" data-cap>
-        <p class="kicker"><span>02</span> Captured information</p>
-        <h2>Turn repair work into structured knowledge.</h2>
-        <p>The same repair, written down properly: one schema for every case, with units and context on every measurement.</p>
-      </div>
-      <div class="cap" data-cap>
-        <p class="kicker"><span>03</span> Structured data</p>
-        <h2>The same schema, every time.</h2>
-        <p>Structured repair cases: symptom, measurement, action, outcome. One case becomes one tile in a growing dataset.</p>
-        <p class="fine">Illustrative · repair-case schema in development</p>
-      </div>
+    <div class="cap" data-cap>
+      <p class="kicker"><span>02</span> Captured information</p>
+      <h2>Turn repair work into structured knowledge.</h2>
+      <p>The same repair, written down properly: one schema for every case, with units and context on every measurement.</p>
     </div>
-
-    <div class="hero-meta">
-      <a class="cue" href="#bench" data-cue>Scroll to explore <i aria-hidden="true">↓</i></a>
-      <span class="coord" data-reveal-meta>10.96° N · 78.08° E — Karur, TN</span>
-      <ol class="steps" data-steps aria-hidden="true">
-        <li class="is-on"><span>01</span> Physical repair</li>
-        <li><span>02</span> Captured</li>
-        <li><span>03</span> Structured</li>
-      </ol>
+    <div class="cap cap--r" data-cap>
+      <p class="kicker"><span>03</span> Structured data</p>
+      <h2>The same schema, every time.</h2>
+      <p>Structured repair cases: symptom, measurement, action, outcome. One case becomes one tile in a growing dataset.</p>
+      <p class="fine">Illustrative · repair-case schema in development</p>
     </div>
+    <ol class="steps" data-steps aria-hidden="true">
+      <li class="is-on"><span>01</span> Physical repair</li>
+      <li><span>02</span> Captured</li>
+      <li><span>03</span> Structured</li>
+    </ol>
   </div>
-
-
-
 </section>
 
 <!-- ============ SECTION 2: AT THE BENCH ============ -->
@@ -283,6 +228,40 @@
   </div>
 </section>
 
+<!-- ============ PATHS — where to go next ============ -->
+<section class="paths">
+  <div class="container">
+    <p class="kicker" data-rise><span>05</span> The work</p>
+    <h2 class="paths-title" data-split>Hardware today. Data and intelligence next.</h2>
+    <ol class="path-list">
+      <li class="path" data-rise>
+        <a href="hardware.html">
+          <span class="path-status"><i class="led"></i>Shipping</span>
+          <span class="path-name">SmartClone</span>
+          <span class="path-desc">Hardware that helps hardware heal. A standalone programming, diagnostic and recovery tool for TV repair.</span>
+          <span class="path-go" aria-hidden="true">→</span>
+        </a>
+      </li>
+      <li class="path" data-rise>
+        <a href="intelligence.html">
+          <span class="path-status"><i class="led led--half"></i>Building</span>
+          <span class="path-name">Repair intelligence</span>
+          <span class="path-desc">From electronics repair to physical intelligence — four steps, built in order.</span>
+          <span class="path-go" aria-hidden="true">→</span>
+        </a>
+      </li>
+      <li class="path" data-rise>
+        <a href="impact.html">
+          <span class="path-status"><i class="led led--off"></i>Every repair</span>
+          <span class="path-name">Impact</span>
+          <span class="path-desc">A TV that's repaired instead of thrown away keeps working — and nobody has to manufacture its replacement.</span>
+          <span class="path-go" aria-hidden="true">→</span>
+        </a>
+      </li>
+    </ol>
+  </div>
+</section>
+
 <!-- ============ CLOSE ============ -->
 <section class="close">
   <div class="container close-grid">
@@ -315,5 +294,6 @@
 <script src="assets/js/vendor/ScrollTrigger.min.js" defer></script>
 <script src="assets/js/site.js" defer></script>
 <script src="assets/js/home.js" defer></script>
+<script type="module" src="assets/js/vendor/model-viewer.min.js"></script>
 </body>
 </html>

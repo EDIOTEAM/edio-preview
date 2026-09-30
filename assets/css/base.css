@@ -139,9 +139,11 @@ ol, ul { padding: 0; list-style: none; }
   backdrop-filter: blur(12px) saturate(1.1);
   border-bottom-color: rgba(111, 211, 227, .18);
 }
-.header-row { height: 100%; display: flex; align-items: center; gap: 40px; }
+.header-row { position: relative; height: 100%; display: flex; align-items: center; gap: 40px; }
 .brand img { height: 28px; width: auto; }
-.nav { margin-left: auto; display: flex; gap: clamp(20px, 2.6vw, 40px); }
+/* nav sits on the page's centre line; brand left, CTA right */
+.nav { position: absolute; left: 50%; transform: translateX(-50%); display: flex; gap: clamp(20px, 2.6vw, 40px); }
+.header-cta { margin-left: auto; }
 .nav a {
   position: relative; padding: 6px 0;
   font: 500 14px/1 var(--font-display); color: #C5D3DA;

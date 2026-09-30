@@ -1,42 +1,88 @@
 /* EDIO — Homepage choreography
-   Intro boot → repair scan → cursor parallax → pinned story (repair → capture → data) → bench case study.
-   GSAP + ScrollTrigger drive everything; CSS handles the cheap per-marker states. */
+   Intro (stage lights, device rises) → scan pass over the real SmartClone → cursor parallax
+   → pinned story: camera orbits to top-down, parts are named, the screen's read becomes a case,
+   the case becomes one tile in a dataset → bench case study → paths.
+   The object is EDIO's own SmartClone model rendered by <model-viewer>; without WebGL or JS the
+   transparent poster render stands in, so the hero still reads. */
 (() => {
   'use strict';
 
   const html = document.documentElement;
-  const { $, $$, split, lineDelays, header } = window.EDIO; // site.js: header, menu, helpers
-
-  if (!window.gsap || !window.ScrollTrigger) { html.classList.remove('is-intro'); return; }
-  gsap.registerPlugin(ScrollTrigger);
-  ScrollTrigger.config({ ignoreMobileResize: true });
+  const { $, $$, split, lineDelays, revealHeadings, header } = window.EDIO;
+  const reduceMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   const hero = $('[data-hero]');
-  const scene = $('[data-scene]');
-  const heroPlates = $$('[data-plate]', hero);
-  const pxLayers = $$('[data-px]', hero);
-  const pxBg = $('.px-bg'), pxOv = $('.px-ov'), pxLb = $('.px-lb');
-  const traceBase = $('.traces-base');
-  const traceDraw = $('.traces-base use:first-child');
-  const markers = $$('[data-mk]', hero).map(el => ({ el, left: parseFloat(el.style.left) / 100, x: 0, hit: false }));
-  const scanEl = $('[data-scan]');
-  const scanTag = $('.scan-tag', scanEl);
-  const title = $('.hero-title');
-  const titleWords = split(title);
-  const heroCopy = $('[data-hero-copy]');
-  const heroCta = $('[data-hero-cta]');
-  const sub = $('.hero-sub');
-  const ctas = $$('.hero-cta .btn');
-  const sys = $('[data-sys]');
-  const sysStatus = $('[data-sys-status]');
-  const meta = $$('.hero-meta > *');
+  const device = $('[data-device]');   // positioned box (CSS centres it)
+  const rig = $('[data-rig]');         // what motion moves, so GSAP never fights the centring
+  const model = $('[data-model]');
+  const title = $('[data-hero-title]');
+  const lines = $$('[data-split-line]', title);
+  const foot = $('[data-hero-foot]');
+  const fades = $$('[data-hero-fade]', hero);
+  const stats = $('[data-stats]');
   const cue = $('[data-cue]');
-  const steps = $$('[data-steps] li');
-  const caps = $$('[data-cap]');
-  const caseEl = $('[data-case]');
+  const light = $('[data-light]');
+  const floor = $('[data-floor]');
+  const boot = $('[data-boot]');
+  const bootStatus = $('[data-boot-status]');
+  const hotspots = $$('[data-hs]', hero);
+  const hsDisplay = $('[data-hs-display]', hero);
+  const caps = $$('[data-cap]', hero);
+  const steps = $$('[data-steps] li', hero);
+  const stepsBox = $('[data-steps]', hero);
+  const caseEl = $('[data-case]', hero);
   const caseRows = $$('.case-head, .case-row', caseEl);
-  const dataset = $('[data-dataset]');
-  const leader = $('[data-leader] path');
+  const dataset = $('[data-dataset]', hero);
+  const leader = $('[data-leader] path', hero);
+
+  /* ---------- Camera: one place that turns numbers into the model's orbit ---------- */
+  const BASE = { theta: 0, phi: 62, r: 96 };
+  const cam = { ...BASE };
+  const applyCam = () => {
+    // attribute, not property: safe before <model-viewer> upgrades; interpolation-decay=1 keeps it immediate
+    model.setAttribute('camera-orbit', `${cam.theta.toFixed(2)}deg ${cam.phi.toFixed(2)}deg ${cam.r.toFixed(2)}%`);
+  };
+
+  /* ---------- Layout: one composition at every size. The device's top face overlaps the headline's
+     second line; in this camera view the faceplate top sits ~34% down the 16:9 model box, the base ~72%. ---------- */
+  function placeDevice() {
+    const hr = hero.getBoundingClientRect();
+    // the last line the headline actually renders (phones wrap it to four), so the device overlaps "layer."
+    const rg = document.createRange(); rg.selectNodeContents(lines[1]);
+    const rs = rg.getClientRects(), l2 = rs.length ? rs[rs.length - 1] : lines[1].getBoundingClientRect();
+    const top = (l2.top - hr.top) + l2.height * (hero.clientWidth < 768 ? 1.02 : .8) - .34 * device.offsetHeight;
+    hero.style.setProperty('--dev-top', Math.round(top) + 'px');
+    return top;
+  }
+  function keepGap() {
+    // device base ~72% down its box, tag ~80%; keep at least 40px (28px on phones) above the bottom bar
+    const hr = hero.getBoundingClientRect();
+    const footTop = foot.getBoundingClientRect().top - hr.top;
+    const gap = hero.clientWidth < 768 ? 28 : 40;
+    const boxH = device.offsetHeight, top = device.offsetTop;
+    const over = top + .82 * boxH + gap - footTop;
+    if (over > 0) {
+      const w = device.offsetWidth * Math.max(.7, 1 - over / (.82 * boxH));
+      hero.style.setProperty('--dev-w', Math.round(w) + 'px');
+      placeDevice();
+    }
+  }
+  function layoutHero() {
+    hero.style.removeProperty('--title-pad');
+    hero.style.removeProperty('--dev-w');
+    const top = placeDevice();
+    if (hero.clientWidth > hero.clientHeight) { keepGap(); return; }   // landscape: headline hangs from the header
+    // portrait (phones, tablets): centre headline + device together in the space above the text block
+    const hr = hero.getBoundingClientRect();
+    const headerH = header.offsetHeight;
+    const titleTop = lines[0].getBoundingClientRect().top - hr.top;
+    const base = top + .74 * device.offsetHeight;
+    const room = foot.getBoundingClientRect().top - hr.top - headerH;
+    const shift = Math.max(0, (room - (base - titleTop)) / 2 - (titleTop - headerH));
+    hero.style.setProperty('--title-pad', Math.round(parseFloat(getComputedStyle(title).paddingTop) + shift) + 'px');
+    placeDevice();
+    keepGap();
+  }
 
   /* ---------- Dataset tiles ---------- */
   const TILE_COUNT = 35, TARGET = 17, HOT = [3, 9, 12, 23, 30, 33];
@@ -47,78 +93,33 @@
   }
   const tiles = $$('.tile', dataset);
   const targetTile = tiles[TARGET];
-  const coldTiles = tiles.filter((t, i) => i !== TARGET && !HOT.includes(i));
   const hotTiles = HOT.map(i => tiles[i]);
-  // order cold tiles by distance from the target so the grid grows out of the case
   const tcol = TARGET % 7, trow = Math.floor(TARGET / 7);
-  coldTiles.sort((a, b) => {
-    const d = el => { const i = tiles.indexOf(el); return Math.hypot(i % 7 - tcol, Math.floor(i / 7) - trow); };
-    return d(a) - d(b);
-  });
-
-  /* ---------- Cover layout with a focal point ---------- */
-  const BLEED = 40;
-  const HERO_IMG = { w: 1672, h: 941, fx: 980 / 1672, fy: 574 / 941 };  // the board under the iron
-  const BENCH_IMG = { w: 1254, h: 1254 };
-  const heroGeom = { l: 0, t: 0, w: 1, h: 1, fx: 0, fy: 0, W: 1, H: 1 };
-
-  function cover(boxW, boxH, img, zoom, tx, ty) {
-    const s = Math.max(boxW / img.w, boxH / img.h) * zoom;
-    const w = img.w * s, h = img.h * s;
-    const l = Math.min(0, Math.max(boxW - w, tx * boxW - img.fx * w));
-    const t = Math.min(0, Math.max(boxH - h, ty * boxH - img.fy * h));
-    return { l, t, w, h };
-  }
-  const applyPlate = (el, g) => { el.style.cssText = `left:${g.l}px;top:${g.t}px;width:${g.w}px;height:${g.h}px`; };
-
-  function layoutHero() {
-    const W = hero.clientWidth, H = hero.clientHeight;
-    const mobile = W < 768, tablet = W < 1200;
-    const zoom = mobile ? 1.28 : tablet ? 1.16 : 1.1;
-    const tx = mobile ? .56 : tablet ? .66 : .64;
-    const ty = mobile ? .5 : .6;
-    const bw = W + BLEED * 2, bh = H + BLEED * 2;
-    const g = cover(bw, bh, HERO_IMG, zoom, (tx * W + BLEED) / bw, (ty * H + BLEED) / bh);
-    heroPlates.forEach(p => applyPlate(p, g));
-    Object.assign(heroGeom, g, {
-      W, H,
-      fx: g.l - BLEED + HERO_IMG.fx * g.w,
-      fy: g.t - BLEED + HERO_IMG.fy * g.h
+  const coldTiles = tiles.filter((t, i) => i !== TARGET && !HOT.includes(i))
+    .sort((a, b) => {
+      const d = el => { const i = tiles.indexOf(el); return Math.hypot(i % 7 - tcol, Math.floor(i / 7) - trow); };
+      return d(a) - d(b);
     });
-    markers.forEach(m => { m.x = g.l - BLEED + m.left * g.w; });
-    // labels that would sit under the headline stay quiet until the copy scrolls away
-    const tr = title.getBoundingClientRect(), hr = hero.getBoundingClientRect();
-    markers.forEach(m => {
-      const x = m.x, y = g.t - BLEED + parseFloat(m.el.style.top) / 100 * g.h;
-      const lw = m.el.querySelector('.mk-label').offsetWidth + 24;
-      const reach = m.el.classList.contains('mk--left') ? -lw : lw;
-      const x0 = Math.min(x, x + reach), x1 = Math.max(x, x + reach);
-      const under = x0 < tr.right - hr.left + 24 && x1 > tr.left - hr.left &&
-                    y > tr.top - hr.top - 40 && y < tr.bottom - hr.top + 40;
-      m.el.classList.toggle('is-occluded', under);
-      m.el.classList.toggle('is-clipped', x0 < 0 || x1 > W);
-    });
-    gsap.set(scene, { transformOrigin: `${heroGeom.fx}px ${heroGeom.fy}px` });
-    drawLeader();
-  }
 
+  /* ---------- Leader: from the device's display to the case card ---------- */
   function drawLeader() {
-    const fx = heroGeom.fx, fy = heroGeom.fy;
-    const cl = caseEl.offsetLeft, ct = caseEl.offsetTop, cw = caseEl.offsetWidth, ch = caseEl.offsetHeight;
-    let d;
-    if (fx > cl + cw) {            // board to the right of the card
-      const y = ct + Math.min(ch - 24, 44), mx = cl + cw + (fx - cl - cw) * .45;
-      d = `M${fx} ${fy} H${mx} V${y} H${cl + cw}`;
-    } else if (fx < cl) {          // board to the left
-      const y = ct + 44, mx = fx + (cl - fx) * .55;
-      d = `M${fx} ${fy} H${mx} V${y} H${cl}`;
-    } else {                       // board below the card
-      const x = Math.min(Math.max(fx, cl + 24), cl + cw - 24);
-      d = `M${fx} ${fy} V${(fy + ct + ch) / 2} H${x} V${ct + ch}`;
-    }
-    leader.setAttribute('d', d);
+    const hr = hero.getBoundingClientRect();
+    const a = hsDisplay.getBoundingClientRect();
+    const c = caseEl.getBoundingClientRect();
+    const ax = a.left - hr.left, ay = a.top - hr.top;
+    const cx = c.left - hr.left, cy = c.top - hr.top + 44;
+    const mx = ax + (cx - ax) * .55;
+    leader.setAttribute('d', cx > ax ? `M${ax} ${ay} H${mx} V${cy} H${cx}` : `M${ax} ${ay} V${c.bottom - hr.top}`);
   }
 
+  if (!window.gsap || !window.ScrollTrigger) { html.classList.remove('is-intro'); return; }
+  gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.config({ ignoreMobileResize: true });
+  // touch devices: ScrollTrigger handles the scroll so pinned scenes never jump when the address bar moves
+  if (window.matchMedia('(pointer: coarse)').matches) ScrollTrigger.normalizeScroll(true);
+
+  /* ---------- Bench section (collage panels) ---------- */
+  const BENCH_IMG = { w: 1254, h: 1254 };
   const bench = $('[data-bench]');
   const benchMedia = $('[data-bench-media]');
   const panels = $$('[data-panel]', bench).map(el => {
@@ -129,6 +130,7 @@
              ax: parseFloat(a.style.left) / 100, ay: parseFloat(a.style.top) / 100 };
   });
   const panelPlates = panels.map(p => p.plate);
+  const applyPlate = (el, g) => { el.style.cssText = `left:${g.l}px;top:${g.t}px;width:${g.w}px;height:${g.h}px`; };
   // cover a panel with one quadrant of the collage; the plate is the whole image, offset so the crop fills the box
   function layoutBench() {
     panels.forEach(p => {
@@ -139,157 +141,139 @@
       const qt = Math.min(0, Math.max(H - qh, H / 2 - p.fy * qh));
       const size = BENCH_IMG.w * s;
       applyPlate(p.plate, { l: ql - p.x * s, t: qt - p.y * s, w: size, h: size });
-      gsap.set(p.plate, { transformOrigin: `${p.ax * size}px ${p.ay * size}px` }); // zoom toward the annotation
+      gsap.set(p.plate, { transformOrigin: `${p.ax * size}px ${p.ay * size}px` });
     });
   }
 
   function layout() { layoutHero(); layoutBench(); }
   layout();
   ScrollTrigger.addEventListener('refreshInit', layout);
-
-  const reduceMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (document.fonts) document.fonts.ready.then(() => ScrollTrigger.refresh());
 
   /* ==========================================================================
-     INTRO — the system coming online (~2.8s, never blocks input)
+     INTRO — the stage lights, the headline sets, the device rises (~2.6s)
      ========================================================================== */
-  const scanState = { p: 0 };
+  const titleWords = lines.flatMap(l => split(l));
   let scanTl = null;
 
   function runIntro(onDone) {
     const skip = reduceMQ.matches || window.scrollY > window.innerHeight * .4;
     html.classList.remove('is-intro');
-    if (skip) { sysStatus.textContent = 'Online'; onDone(); return; }
+    if (skip) { onDone(); return; }
 
-    const W = heroGeom.W;
-    const wipe = { v: 100 };
-    gsap.set([header, sub, ...ctas, ...meta, sys], { opacity: 0 });
+    const d = lineDelays(titleWords, .1, .03);
+    gsap.set([header, stats, cue, ...fades, light, floor], { opacity: 0 });
     gsap.set(titleWords, { yPercent: 105 });
-    gsap.set('.fl-h', { scaleX: 0 });
-    gsap.set('.fl-v', { scaleY: 0 });
-    gsap.set(scene, { clipPath: 'inset(0 0 0 100%)' });
-    gsap.set(pxBg, { scale: 1.06 });
-    gsap.set(traceDraw, { strokeDashoffset: 900 });
-    gsap.set(sub, { y: 14 });
-    gsap.set(ctas, { y: 12 });
+    gsap.set(rig, { opacity: 0, y: 40 });
+    gsap.set(fades, { y: 12 });
+    gsap.set(stats, { y: 10 });
+    Object.assign(cam, { theta: BASE.theta - 16, phi: 70, r: 118 }); applyCam();
 
-    const delays = lineDelays(titleWords);
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' }, onComplete: onDone });
-
-    tl.to(sys, { opacity: 1, duration: .35 }, .05)
-      .fromTo(sysStatus, { opacity: .25 }, { opacity: 1, duration: .16, repeat: 4, yoyo: true, ease: 'steps(1)' }, .2) // even repeat → settles bright
-      .to('.fl-h', { scaleX: 1, duration: 1.15, stagger: .12, ease: 'expo.inOut' }, .25)
-      .to('.fl-v', { scaleY: 1, duration: 1.15, stagger: .08, ease: 'expo.inOut' }, .35)
-      // cyan edge wipes the bench into view, right → left
-      .to(scanEl, { opacity: .9, duration: .2 }, .7)
-      .to(wipe, {
-        v: 0, duration: 1.25, ease: 'expo.inOut',
-        onUpdate() {
-          scene.style.clipPath = `inset(0 0 0 ${wipe.v}%)`;
-          gsap.set(scanEl, { x: W * wipe.v / 100 });
-        }
-      }, .7)
-      .to(scanEl, { opacity: 0, duration: .3 }, 1.8)
-      .to(pxBg, { scale: 1, duration: 2, ease: 'power2.out' }, .7)
-      .to(traceDraw, { strokeDashoffset: 0, duration: 1.4, ease: 'power2.inOut' }, 1.15)
-      .to(header, { opacity: 1, duration: .8 }, 1.45)
-      .to(titleWords, { yPercent: 0, duration: 1.05, ease: 'expo.out', delay: i => delays[i] }, 1.45)
-      .to(sub, { opacity: 1, y: 0, duration: .8 }, 1.95)
-      .to(ctas, { opacity: 1, y: 0, duration: .7, stagger: .08 }, 2.1)
-      .call(() => { sysStatus.textContent = 'Online'; }, null, 2.0)
-      .to(meta, { opacity: 1, duration: .6, stagger: .08 }, 2.35)
-      .add(() => gsap.set(scene, { clearProps: 'clipPath' }));
+    gsap.timeline({ defaults: { ease: 'power3.out' }, onComplete: onDone })
+      .to(boot, { opacity: 1, duration: .3 }, .05)
+      .fromTo(bootStatus, { opacity: .25 }, { opacity: 1, duration: .14, repeat: 4, yoyo: true, ease: 'steps(1)' }, .15)
+      .call(() => { bootStatus.textContent = 'Online'; }, null, .85)
+      .to(boot, { opacity: 0, duration: .35 }, 1.0)
+      .to(light, { opacity: 1, duration: 1.4, ease: 'power2.inOut' }, .55)
+      .to(floor, { opacity: 1, duration: 1.4, ease: 'power2.inOut' }, .7)
+      .to(titleWords, { yPercent: 0, duration: 1.1, ease: 'expo.out', delay: i => d[i] }, 1.0)
+      .to(rig, { opacity: 1, y: 0, duration: 1.4, ease: 'power3.out' }, 1.25)
+      .to(cam, { ...BASE, duration: 1.8, ease: 'power3.out', onUpdate: applyCam }, 1.25)
+      .to(header, { opacity: 1, duration: .8 }, 1.5)
+      .to(fades, { opacity: 1, y: 0, duration: .7, stagger: .08 }, 1.85)
+      .to(stats, { opacity: 1, y: 0, duration: .7 }, 2.05)
+      .to(cue, { opacity: 1, duration: .6 }, 2.3);
   }
 
   /* ==========================================================================
-     REPAIR SCAN — periodic cyan pass; traces light, markers wake, image sharpens
+     REPAIR SCAN — a thin cyan pass over the device; each part it crosses is named for a moment
      ========================================================================== */
-  function setScan(x) {
-    gsap.set(scanEl, { x });
-    const p = (x + BLEED - heroGeom.l) / heroGeom.w * 100;
-    hero.style.setProperty('--scanp', p.toFixed(2) + '%');
-    scanTag.textContent = 'Scan · ' + String(Math.round(scanState.p * 100)).padStart(3, '0');
-    for (const m of markers) {
-      if (!m.hit && x >= m.x) {
-        m.hit = true;
-        m.el.classList.add('is-hit');
-        gsap.delayedCall(1.5, () => m.el.classList.remove('is-hit'));
-      }
-    }
-  }
+  const scan = document.createElement('i');
+  scan.className = 'scan';
+  scan.setAttribute('aria-hidden', 'true');
+  device.appendChild(scan);
+  const scanState = { p: 0 };
 
   function buildScan(mobile) {
-    const dur = mobile ? 2.8 : 2.3;
-    return gsap.timeline({ repeat: -1, repeatDelay: mobile ? 11 : 6, paused: true })
-      .call(() => markers.forEach(m => { m.hit = false; }))
-      .to(scanEl, { opacity: .85, duration: .25 }, 0)
-      .fromTo(scanState, { p: 0 }, {
-        p: 1, duration: dur, ease: 'sine.inOut',
-        onUpdate: () => setScan(-0.03 * heroGeom.W + scanState.p * 1.06 * heroGeom.W)
-      }, 0)
-      .to(scanEl, { opacity: 0, duration: .3 }, dur - .3)
-      .call(() => hero.style.setProperty('--scanp', '-20%'));
+    const hit = new Set();
+    const sweep = () => {
+      const r = device.getBoundingClientRect();
+      const x0 = r.left + r.width * .24, x1 = r.left + r.width * .76;
+      const x = x0 + (x1 - x0) * scanState.p;
+      gsap.set(scan, { x: x - r.left });
+      hotspots.forEach(h => {
+        if (hit.has(h)) return;
+        if (h.getBoundingClientRect().left <= x) {
+          hit.add(h); h.classList.add('is-hit');
+          gsap.delayedCall(1.6, () => h.classList.remove('is-hit'));
+        }
+      });
+    };
+    return gsap.timeline({ repeat: -1, repeatDelay: mobile ? 12 : 7, paused: true, delay: 1.2 })
+      .call(() => hit.clear())
+      .to(scan, { opacity: .9, duration: .25 }, 0)
+      .fromTo(scanState, { p: 0 }, { p: 1, duration: mobile ? 2.4 : 2, ease: 'sine.inOut', onUpdate: sweep }, 0)
+      .to(scan, { opacity: 0, duration: .3 }, mobile ? 2.1 : 1.7);
   }
 
   /* ==========================================================================
-     SCROLL + PARALLAX (rebuilt per breakpoint)
+     STORY — physical repair → captured information → structured data (scrubbed, pinned)
      ========================================================================== */
   function buildStory({ mobile, reduce }) {
-    const z1 = reduce ? 1 : 1.08, z2 = reduce ? 1 : (mobile ? 1.18 : 1.24);
-    const lift = reduce ? 0 : -120;
-
+    const lift = reduce ? 0 : -150;
     let phase = -1;
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
-      // read the scrubbed playhead (not raw scroll) so the index never lags the scene
       onUpdate() {
         const t = tl.time();
-        const p = t < 3.2 ? 0 : t < 5.8 ? 1 : 2;
+        const p = t < 3.1 ? 0 : t < 5.6 ? 1 : 2;
         if (p !== phase) { phase = p; steps.forEach((s, i) => s.classList.toggle('is-on', i === p)); }
+        if (t > 3 && t < 6.2) drawLeader();
       },
       scrollTrigger: {
-        trigger: hero,
-        start: 'top top',
-        end: () => '+=' + Math.round(window.innerHeight * (mobile ? 2.4 : 3)),
-        pin: true,
-        scrub: mobile ? .4 : .7,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
+        trigger: hero, start: 'top top',
+        end: () => '+=' + Math.round(window.innerHeight * (mobile ? 2.6 : 3.2)),
+        pin: true, scrub: mobile ? 1 : .7, anticipatePin: 1, invalidateOnRefresh: true,
         onUpdate(self) {
-          if (scanTl) {
-            const active = self.progress < .06;
-            if (active && scanTl.paused()) scanTl.play();
-            if (!active && !scanTl.paused()) { scanTl.pause(0); scanEl.style.opacity = 0; hero.style.setProperty('--scanp', '-20%'); }
-          }
+          if (!scanTl) return;
+          const active = self.progress < .03;
+          if (active && scanTl.paused()) scanTl.play();
+          if (!active && !scanTl.paused()) { scanTl.pause(0); gsap.set(scan, { opacity: 0 }); hotspots.forEach(h => h.classList.remove('is-hit')); }
         }
       }
     });
 
-    // --- 01 Physical repair: the hero hands over to the bench ---
-    tl.to(heroCopy, { y: lift, duration: 2.2, ease: 'power1.in' }, 0)
-      .to(heroCopy, { opacity: 0, duration: 1.4 }, .6)
-      .to(heroCta, { opacity: 0, duration: .7 }, 0)
-      .fromTo([sys, cue], { opacity: 1 }, { opacity: 0, duration: .6, immediateRender: false }, 0)
-      .to(scene, { scale: z1, duration: 2.2 }, 0)
-      .to(traceBase, { opacity: 1, duration: 1.6 }, .2)
-      .to(hero, { '--on': 1, duration: .9 }, 1)
-      .fromTo(caps[0], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .8, ease: 'power2.out' }, 1.5)
-      .to(scene, { scale: z2, duration: 1.2, ease: 'power1.inOut' }, 2.2)
+    // centre of the stage, measured when the trigger refreshes
+    const toCentre = () => (hero.clientHeight * (mobile ? .42 : .47)) - (device.offsetTop + device.offsetHeight / 2);
+    const centreX = () => { const r = device.getBoundingClientRect(), h = hero.getBoundingClientRect(); return h.width / 2 - (r.left - h.left + r.width / 2); };
+    const shiftLeft = () => centreX() - (mobile ? 0 : hero.clientWidth * .2);
 
-    // --- 02 Captured information: the repair becomes a case ---
-      .to(caps[0], { opacity: 0, y: -16, duration: .5 }, 3.1)
-      .to(hero, { '--on': 0, duration: .5 }, 3.1)
-      .to(pxLb, { opacity: .0, duration: .5 }, 3.1)
-      .to(pxBg, { opacity: .38, duration: 1 }, 3.1)
-      .to(traceBase, { opacity: .55, duration: 1 }, 3.1)
-      .fromTo(leader, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: .7, ease: 'power2.inOut' }, 3.3)
-      .fromTo(caseEl, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .6, ease: 'power2.out' }, 3.7)
-      .fromTo(caseRows, { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: .35, stagger: .18, ease: 'power2.out' }, 3.9)
-      .fromTo(caps[1], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .7, ease: 'power2.out' }, 3.6)
+    // --- 01 Physical repair: the headline lifts away; the camera looks down at the faceplate ---
+    tl.to(title, { y: lift, opacity: 0, duration: 1.8, ease: 'power1.in' }, 0)
+      .to(foot, { opacity: 0, y: 30, duration: .8 }, 0)
+      .to('[data-device-tag]', { opacity: 0, duration: .5 }, 0)
+      .to(rig, { y: toCentre, scale: mobile ? 1.05 : 1.12, duration: 2.2, ease: 'power1.inOut' }, 0)
+      .to(cam, { theta: 0, phi: 16, r: 92, duration: 2.2, ease: 'power1.inOut', onUpdate: applyCam }, 0)
+      .to(light, { opacity: .7, duration: 2 }, 0)
+      .to(hero, { '--hs': 1, duration: .8 }, 1.3)
+      .fromTo(caps[0], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .8, ease: 'power2.out' }, 1.5)
+      .fromTo(stepsBox, { opacity: 0 }, { opacity: 1, duration: .6 }, 1.5)
+
+    // --- 02 Captured information: what the display read becomes a case ---
+      .to(caps[0], { opacity: 0, y: -16, duration: .5 }, 3.0)
+      .to(rig, { x: shiftLeft, y: () => toCentre() - hero.clientHeight * (mobile ? .02 : .07), scale: mobile ? 1 : 1.02, duration: 1.1, ease: 'power2.inOut' }, 3.0)
+      .to(cam, { theta: mobile ? 0 : 10, duration: 1.1, ease: 'power2.inOut', onUpdate: applyCam }, 3.0)
+      .to(hero, { '--hs': 0, '--hs-keep': mobile ? 0 : 1, duration: .6 }, 3.1)
+      .fromTo(leader, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: .7, ease: 'power2.inOut' }, 3.5)
+      .fromTo(caseEl, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .6, ease: 'power2.out' }, 3.8)
+      .fromTo(caseRows, { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: .35, stagger: .16, ease: 'power2.out' }, 3.95)
+      .fromTo(caps[1], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .7, ease: 'power2.out' }, 3.7)
 
     // --- 03 Structured data: one case, one tile, a growing dataset ---
       .to(caps[1], { opacity: 0, y: -16, duration: .5 }, 5.6)
       .to(caseRows, { opacity: 0, duration: .35, stagger: .04 }, 5.6)
       .to(leader, { strokeDashoffset: 1, duration: .5 }, 5.6)
+      .to(hero, { '--hs-keep': 0, duration: .5 }, 5.6)
       .to(caseEl, {
         x: () => dataset.offsetLeft + targetTile.offsetLeft - caseEl.offsetLeft,
         y: () => dataset.offsetTop + targetTile.offsetTop - caseEl.offsetTop,
@@ -297,36 +281,25 @@
         scaleY: () => targetTile.offsetHeight / caseEl.offsetHeight,
         duration: 1.1, ease: 'power3.inOut'
       }, 6.0)
-      .to(pxBg, { opacity: .1, duration: 1.2 }, 6.0)
-      .to(pxOv, { opacity: .15, duration: 1.2 }, 6.0)
+      .to(rig, { opacity: mobile ? .1 : .22, x: () => mobile ? 0 : hero.clientWidth * .22, duration: 1.2 }, 6.0)
       .fromTo(coldTiles, { opacity: 0 }, { opacity: 1, duration: .3, stagger: .03 }, 6.5)
       .fromTo(targetTile, { opacity: 0 }, { opacity: 1, duration: .2 }, 7.05)
       .to(caseEl, { opacity: 0, duration: .2 }, 7.1)
       .fromTo(hotTiles, { opacity: 0 }, { opacity: 1, duration: .3, stagger: .1 }, 7.3)
       .fromTo(caps[2], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .7, ease: 'power2.out' }, 6.3)
-      .to({}, { duration: .8 }, 8.2); // hold
+      .to({}, { duration: .8 }, 8.2);
+
+    // phones: the case card sits over the device, so the device steps back while it is read
+    if (mobile) tl.to(rig, { opacity: .15, duration: .6 }, 3.3);
 
     return tl;
   }
 
   function buildBench({ mobile, reduce }) {
     const annos = $$('[data-anno]', bench);
-    const lines = $$('[data-anno-line]', bench);
+    const annoLines = $$('[data-anno-line]', bench);
     const labels = $$('[data-anno-label]', bench);
     const index = $$('[data-index] li', bench);
-    const benchWords = split($('.bench-title', bench));
-    const delays = lineDelays(benchWords, .08, .02);
-
-    // headline reveal (once, not scrubbed)
-    if (!reduce) {
-      gsap.set(benchWords, { yPercent: 105 });
-      ScrollTrigger.create({
-        trigger: bench, start: 'top 70%', once: true,
-        onEnter: () => gsap.to(benchWords, { yPercent: 0, duration: 1, ease: 'expo.out', delay: i => delays[i] })
-      });
-    }
-
-    // pin only when the whole case study fits on screen (stacked tablet layouts often don't)
     const fits = bench.offsetHeight <= window.innerHeight + 1;
     const st = (mobile || !fits)
       ? { trigger: '[data-bench-frame]', start: 'top 85%', end: 'bottom 30%', scrub: .4 }
@@ -335,62 +308,53 @@
     const tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: st });
     tl.fromTo(benchMedia, { clipPath: reduce ? 'inset(0% 0% 0% 0%)' : 'inset(7% 9% 7% 9%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.2, ease: 'power2.out' }, 0)
       .fromTo(panelPlates, { scale: 1 }, { scale: reduce ? 1 : 1.08, duration: 4 }, 0);
-
     annos.forEach((a, i) => {
       const at = .8 + i * .7;
       tl.fromTo(panels[i].el, { '--shade': reduce ? 0 : .55 }, { '--shade': 0, duration: .5, ease: 'power2.out' }, at - .1)
         .fromTo(a, { opacity: 0, scale: .4 }, { opacity: 1, scale: 1, duration: .25, ease: 'back.out(2)' }, at)
-        .fromTo(lines[i], { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: .4, ease: 'power2.inOut' }, at + .15)
+        .fromTo(annoLines[i], { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: .4, ease: 'power2.inOut' }, at + .15)
         .fromTo(labels[i], { opacity: 0 }, { opacity: 1, duration: .25 }, at + .45)
         .fromTo(index[i], { opacity: .3, '--fill': 0 }, { opacity: 1, '--fill': 1, duration: .4 }, at + .3);
     });
     tl.to({}, { duration: .4 });
-    return tl;
   }
 
+  /* ---------- Cursor parallax: light 8px, device 14px, headline 3px ---------- */
   function buildParallax() {
-    const layers = pxLayers.map(el => ({
-      amt: +el.dataset.px,
-      x: gsap.quickTo(el, 'x', { duration: 1.2, ease: 'power3' }),
-      y: gsap.quickTo(el, 'y', { duration: 1.2, ease: 'power3' })
-    }));
-    const tx = gsap.quickTo(title, 'x', { duration: 1.4, ease: 'power3' });
-    const ty = gsap.quickTo(title, 'y', { duration: 1.4, ease: 'power3' });
+    const q = (el, amt, dur) => ({ amt, x: gsap.quickTo(el, 'x', { duration: dur, ease: 'power3' }), y: gsap.quickTo(el, 'y', { duration: dur, ease: 'power3' }) });
+    const layers = [q(light, 8, 1.2), q($('.device-model', device), 14, 1.2), q(title, 3, 1.4)];
+    const turn = gsap.quickTo(cam, 'theta', { duration: 1.4, ease: 'power3', onUpdate: applyCam });
     const onMove = e => {
+      if (window.scrollY > 40) return;
       const nx = e.clientX / window.innerWidth - .5, ny = e.clientY / window.innerHeight - .5;
       layers.forEach(l => { l.x(-nx * 2 * l.amt); l.y(-ny * 2 * l.amt); });
-      tx(-nx * 6); ty(-ny * 6);   // 3px each way
+      turn(BASE.theta + nx * 6);   // the object turns a few degrees toward the cursor
     };
     window.addEventListener('pointermove', onMove, { passive: true });
     return () => {
       window.removeEventListener('pointermove', onMove);
-      gsap.set([...pxLayers, title], { x: 0, y: 0 });
+      gsap.set([light, $('.device-model', device), title], { x: 0, y: 0 });
     };
   }
 
   runIntro(() => {
+    revealHeadings(null, reduceMQ.matches);
     const mm = gsap.matchMedia();
     mm.add({
       mobile: '(max-width: 767px)',
-      desktop: '(min-width: 768px)',
       reduce: '(prefers-reduced-motion: reduce)',
       fine: '(hover: hover) and (pointer: fine)'
     }, ctx => {
       const { mobile, reduce, fine } = ctx.conditions;
       layout();
+      Object.assign(cam, BASE); applyCam();
       buildStory({ mobile, reduce });
       buildBench({ mobile, reduce });
-
-      if (!reduce) {
-        scanTl = buildScan(mobile);
-        if (window.scrollY < 40) scanTl.play();
-      }
+      if (!reduce) { scanTl = buildScan(mobile); if (window.scrollY < 40) scanTl.play(); }
       const killParallax = (!reduce && fine && !mobile) ? buildParallax() : null;
-
       return () => {
         if (scanTl) { scanTl.kill(); scanTl = null; }
         if (killParallax) killParallax();
-        hero.style.setProperty('--scanp', '-20%');
       };
     });
   });
