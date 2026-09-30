@@ -26,6 +26,7 @@
 <link rel="preload" as="image" href="assets/img/home/smartclone-front.webp">
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/home.css?v=20260930b">
+<link rel="stylesheet" href="assets/css/home-sections.css?v=1">
 <script>
   (function (h) {
     h.classList.replace('no-js', 'js');
@@ -159,20 +160,133 @@
   </div>
 </section>
 
-<!-- ============ OFFER — what EDIO does, in one line, and the way in ============ -->
-<section class="offer" aria-label="EDIO in brief">
-  <div class="container offer-inner">
-    <p class="offer-tag" data-rise>SmartClone SC—1 <span><i class="led" aria-hidden="true"></i>Shipping now</span></p>
-    <p class="offer-line" data-split>Every repair, captured and made useful for the next one.</p>
-    <div class="offer-cta" data-rise>
-      <a class="btn btn-solid btn-sm" href="contact.html">Partner with EDIO <i aria-hidden="true">→</i></a>
-      <a class="text-link" href="hardware.html">See SmartClone <i aria-hidden="true">→</i></a>
+<!-- ============ 04 THE PROBLEM — knowledge exists, but it is scattered ============ -->
+<section class="hs-problem" aria-labelledby="problem-title">
+  <div class="container hs-problem-grid">
+    <div class="hs-problem-copy">
+      <p class="kicker kicker--dark" data-rise><span>04</span> The problem</p>
+      <h2 class="hs-h2 hs-h2--ink" id="problem-title" data-split>Repair knowledge exists. It's just scattered.</h2>
+      <p class="hs-lede hs-lede--ink" data-rise>It lives with technicians, in repair shops, in recorded repairs and in technical sources. Valuable knowledge is often difficult to reuse at scale.</p>
     </div>
-    <dl class="offer-stats" data-rise-stagger>
-      <div data-rise><span class="st-n">01</span><dt>7</dt><dd>repair modes, standalone</dd></div>
-      <div data-rise><span class="st-n">02</span><dt>33</dt><dd>PMIC chips supported</dd></div>
-      <div data-rise><span class="st-n">03</span><dt>700+</dt><dd>technicians at one training day</dd></div>
-    </dl>
+    <!-- fragments sit apart, as the knowledge does; they drift slightly with scroll -->
+    <div class="scatter" data-scatter aria-hidden="true">
+      <div class="frag" style="--x:4%;--y:6%;--r:-3deg;--d:0" data-frag><span>Source</span><b>Technicians</b><em>Faults and fixes from day-to-day work</em></div>
+      <div class="frag" style="--x:52%;--y:0%;--r:2deg;--d:1" data-frag><span>Source</span><b>Repair shops</b><em>Know-how that stays at one bench</em></div>
+      <div class="frag" style="--x:14%;--y:52%;--r:2.5deg;--d:2" data-frag><span>Source</span><b>Recorded repairs</b><em>Diagnostic paths caught on video</em></div>
+      <div class="frag" style="--x:58%;--y:48%;--r:-2deg;--d:3" data-frag><span>Source</span><b>Technical sources</b><em>Books and reference material</em></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 WHAT EDIO DOES — sources → EDIO → collect → structure → validate → intelligence ============ -->
+<section class="hs-flow" aria-labelledby="flow-title" data-flow>
+  <div class="container">
+    <div class="hs-head">
+      <p class="kicker" data-rise><span>05</span> What EDIO does</p>
+      <h2 class="hs-h2" id="flow-title" data-split>From fragments to a repair-intelligence layer.</h2>
+      <p class="hs-lede" data-rise>Raw information isn't intelligence. EDIO collects repair knowledge, gives it one structure and validates it with technicians and in-house R&amp;D.</p>
+    </div>
+
+    <div class="flow" role="img" aria-label="Technicians, repair videos, technical knowledge and R&amp;D feed into EDIO, which collects, structures and validates them into repair intelligence">
+      <ol class="flow-in">
+        <li data-flow-in>Technicians</li>
+        <li data-flow-in>Repair videos</li>
+        <li data-flow-in>Technical knowledge</li>
+        <li data-flow-in>R&amp;D</li>
+      </ol>
+      <svg class="flow-wires" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <path data-flow-wire d="M0 12.5 C 50 12.5, 50 50, 100 50" pathLength="1"/>
+        <path data-flow-wire d="M0 37.5 C 50 37.5, 50 50, 100 50" pathLength="1"/>
+        <path data-flow-wire d="M0 62.5 C 50 62.5, 50 50, 100 50" pathLength="1"/>
+        <path data-flow-wire d="M0 87.5 C 50 87.5, 50 50, 100 50" pathLength="1"/>
+      </svg>
+      <div class="flow-core" data-flow-core><img src="assets/img/logo-wordmark-light.png" alt="" width="123" height="32"></div>
+      <ol class="flow-steps">
+        <li data-flow-step><span>01</span>Collect</li>
+        <li data-flow-step><span>02</span>Structure</li>
+        <li data-flow-step><span>03</span>Validate</li>
+        <li data-flow-step class="is-out"><span>→</span>Repair intelligence</li>
+      </ol>
+    </div>
+
+    <!-- one record, the unit the whole process produces -->
+    <div class="record-line" data-rise>
+      <p class="record-line-label">One repair record</p>
+      <ol>
+        <li>Device / board</li><li>Symptom</li><li>Diagnosis</li><li>Solution</li><li>Outcome</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 STARTING POINT — the category changes, the model remains ============ -->
+<section class="hs-cats" aria-labelledby="cats-title">
+  <div class="container">
+    <div class="hs-head">
+      <p class="kicker kicker--dark" data-rise><span>06</span> Starting point</p>
+      <h2 class="hs-h2 hs-h2--ink" id="cats-title" data-split>The category changes. The intelligence model remains.</h2>
+    </div>
+    <ol class="cats" data-rise-stagger>
+      <li class="cat cat--now" data-rise>
+        <p class="cat-stage"><i class="led"></i>Current focus</p>
+        <h3>Television</h3>
+        <p>Our strongest domain: repair experience, technician access, repair knowledge and SmartClone.</p>
+      </li>
+      <li class="cat cat--poc" data-rise>
+        <p class="cat-stage"><i class="led led--half"></i>Early POC</p>
+        <h3>Smartphones</h3>
+        <p>First work to collect and structure smartphone repair knowledge, and test that the method transfers.</p>
+      </li>
+      <li class="cat cat--poc" data-rise>
+        <p class="cat-stage"><i class="led led--half"></i>Early POC</p>
+        <h3>Laptops</h3>
+        <p>Initial repair-data exploration using the same underlying approach.</p>
+      </li>
+      <li class="cat cat--next" data-rise>
+        <p class="cat-stage"><i class="led led--off"></i>Expansion</p>
+        <h3>Future</h3>
+        <p>Personal electronics, appliances and more, as the data model and validation mature.</p>
+      </li>
+    </ol>
+    <!-- one shared model runs underneath every category -->
+    <div class="cats-model" data-rise><span>Collect</span><i></i><span>Structure</span><i></i><span>Validate</span><i></i><span>Repair intelligence</span></div>
+  </div>
+</section>
+
+<!-- ============ 07 PRODUCTS — proof that repair intelligence becomes practical ============ -->
+<section class="hs-products" aria-labelledby="products-title">
+  <div class="container">
+    <div class="hs-head">
+      <p class="kicker" data-rise><span>07</span> Products</p>
+      <h2 class="hs-h2" id="products-title" data-split>Repair intelligence, put to work.</h2>
+      <p class="hs-lede" data-rise>Two parts of the larger EDIO platform: a tool on the bench, and the ecosystem around the people who use it.</p>
+    </div>
+    <div class="prods">
+      <article class="prod prod--smartclone" data-rise>
+        <div class="prod-media"><img src="assets/img/hardware/smartclone-top.webp" alt="SmartClone, seen from above" width="1100" height="825" loading="lazy"></div>
+        <div class="prod-body">
+          <p class="prod-tag"><i class="led"></i>Shipping · Current product</p>
+          <h3>SmartClone</h3>
+          <p>A television diagnostic and recovery tool. It helps technicians diagnose faults, narrow hardware problems and handle supported software and recovery issues.</p>
+          <a class="text-link" href="hardware.html">Explore SmartClone <i aria-hidden="true">→</i></a>
+        </div>
+      </article>
+      <article class="prod prod--app" data-rise>
+        <div class="prod-media prod-media--app" aria-hidden="true">
+          <div class="pillars">
+            <div><span>01</span>Learning</div>
+            <div><span>02</span>Community</div>
+            <div><span>03</span>Events</div>
+          </div>
+        </div>
+        <div class="prod-body">
+          <p class="prod-tag"><i class="led"></i>Technician ecosystem</p>
+          <h3>EDIO App</h3>
+          <p>The digital home for technicians, built on learning, community and events. It keeps EDIO connected to the repair ecosystem where repair knowledge is made.</p>
+          <a class="text-link" href="contact.html?role=repair-professional">Join as a technician <i aria-hidden="true">→</i></a>
+        </div>
+      </article>
+    </div>
   </div>
 </section>
 
@@ -180,7 +294,7 @@
 <section class="bench" id="bench" data-bench>
   <div class="container bench-grid">
     <div class="bench-copy">
-      <p class="kicker kicker--light"><span>04</span> At the bench</p>
+      <p class="kicker kicker--light"><span>08</span> Real-world proof</p>
       <h2 class="bench-title" data-split>Real people, real boards. That's where the data comes from.</h2>
       <p class="bench-sub">Where repair knowledge is made — and usually lost.</p>
 
@@ -236,48 +350,53 @@
   </div>
 </section>
 
-<!-- ============ PATHS — where to go next ============ -->
-<section class="paths">
+<!-- ============ 08b MILESTONES — verified only ============ -->
+<section class="hs-proof" aria-labelledby="proof-title">
   <div class="container">
-    <p class="kicker" data-rise><span>05</span> The work</p>
-    <h2 class="paths-title" data-split>Hardware today. Data and intelligence next.</h2>
-    <ol class="path-list">
-      <li class="path" data-rise>
-        <a href="hardware.html">
-          <span class="path-status"><i class="led"></i>Shipping</span>
-          <span class="path-name">SmartClone</span>
-          <span class="path-desc">Hardware that helps hardware heal. A standalone programming, diagnostic and recovery tool for TV repair.</span>
-          <span class="path-go" aria-hidden="true">→</span>
-        </a>
+    <h2 class="sr" id="proof-title">Milestones</h2>
+    <ol class="miles" data-rise-stagger>
+      <li class="mile" data-rise>
+        <div class="mile-media"><img src="assets/img/about/karur-conclave.webp" alt="Best Tech Startup award at Karur's first Startup Conclave" width="960" height="720" loading="lazy"></div>
+        <p class="mile-meta"><span>Award</span><time datetime="2025-09">Sept 2025</time></p>
+        <h3>Best Tech Startup</h3>
+        <p>Karur's first Startup Conclave.</p>
       </li>
-      <li class="path" data-rise>
-        <a href="intelligence.html">
-          <span class="path-status"><i class="led led--half"></i>Building</span>
-          <span class="path-name">Repair intelligence</span>
-          <span class="path-desc">From electronics repair to physical intelligence — four steps, built in order.</span>
-          <span class="path-go" aria-hidden="true">→</span>
-        </a>
+      <li class="mile" data-rise>
+        <div class="mile-media"><img src="assets/img/about/cedi-funding.webp" alt="CEDI NIT Trichy funding handover" width="1040" height="780" loading="lazy"></div>
+        <p class="mile-meta"><span>Funding</span><time datetime="2025-10">Oct 2025</time></p>
+        <h3>₹20 lakh from CEDI, NIT Trichy</h3>
+        <p>For the Master REC Tool, with a patent applied for.</p>
       </li>
-      <li class="path" data-rise>
-        <a href="impact.html">
-          <span class="path-status"><i class="led led--off"></i>Every repair</span>
-          <span class="path-name">Impact</span>
-          <span class="path-desc">A TV that's repaired instead of thrown away keeps working — and nobody has to manufacture its replacement.</span>
-          <span class="path-go" aria-hidden="true">→</span>
-        </a>
+      <li class="mile" data-rise>
+        <div class="mile-media"><img src="assets/img/training-day.jpg" alt="Technician training day" width="960" height="720" loading="lazy"></div>
+        <p class="mile-meta"><span>Community</span><time datetime="2026-08">Aug 2026</time></p>
+        <h3>700+ technicians, one training day</h3>
+        <p>TV engineers and technicians from across India.</p>
       </li>
     </ol>
+    <div class="supporters" data-rise>
+      <p>Supported by</p>
+      <ul>
+        <li><img src="assets/img/about/partners/p-cedi.webp" alt="CEDI NIT Trichy" width="142" height="120" loading="lazy"></li>
+        <li><img src="assets/img/about/partners/p-isb.webp" alt="ISB iVenture" width="590" height="120" loading="lazy"></li>
+        <li><img src="assets/img/about/partners/p-nidhi.webp" alt="DST NIDHI" width="399" height="120" loading="lazy"></li>
+        <li><img src="assets/img/about/partners/p-startuptn.webp" alt="StartupTN" width="520" height="116" loading="lazy"></li>
+        <li><img src="assets/img/about/partners/p-edii.webp" alt="EDII TN" width="122" height="120" loading="lazy"></li>
+        <li><img src="assets/img/about/partners/p-veltech.webp" alt="Veltech TBI" width="218" height="120" loading="lazy"></li>
+      </ul>
+    </div>
   </div>
 </section>
 
-<!-- ============ CLOSE ============ -->
-<section class="close">
-  <div class="container close-grid">
-    <p class="kicker kicker--dark"><span>—</span> Build with us</p>
-    <h2 class="close-title">Repair more. Waste less. Build smarter.</h2>
-    <div class="close-side">
-      <p>Investor, partner or technician — tell us who you are and a person from the team will reply.</p>
-      <a class="btn btn-ink" href="contact.html">Talk to EDIO <i aria-hidden="true">→</i></a>
+<!-- ============ 09 CLOSING VISION ============ -->
+<section class="hs-vision" aria-labelledby="vision-title">
+  <div class="container hs-vision-inner">
+    <p class="kicker kicker--dark" data-rise><span>—</span> EDIO vision</p>
+    <h2 class="hs-vision-title" id="vision-title" data-split>To make every repair smarter.</h2>
+    <p class="hs-vision-sub" data-rise>We're building a growing repair-intelligence layer for electronics. Partners, investors and institutions are welcome to look closer.</p>
+    <div class="hs-vision-cta" data-rise>
+      <a class="btn btn-ink" href="intelligence.html">Explore repair intelligence <i aria-hidden="true">→</i></a>
+      <a class="btn btn-ink-line" href="contact.html">Contact EDIO <i aria-hidden="true">→</i></a>
     </div>
   </div>
 </section>
@@ -302,6 +421,7 @@
 <script src="assets/js/vendor/ScrollTrigger.min.js" defer></script>
 <script src="assets/js/site.js" defer></script>
 <script src="assets/js/home.js?v=20260930b" defer></script>
+<script src="assets/js/home-sections.js?v=1" defer></script>
 <script type="module" src="assets/js/vendor/model-viewer.min.js"></script>
 </body>
 </html>
