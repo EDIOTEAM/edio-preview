@@ -8,6 +8,8 @@
   'use strict';
 
   const html = document.documentElement;
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  if (!location.hash) window.scrollTo(0, 0);
   const { $, $$, split, lineDelays, revealHeadings, header } = window.EDIO;
   const reduceMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -67,7 +69,7 @@
     // headline split around the device: line 1 above, device, line 2 below; the group is centred on screen
     const second = lines[1].parentElement;                 // .ht-line holding "intelligence layer."
     const boxH = device.offsetHeight;
-    const gap = 14;
+    const gap = 34;
     second.style.marginTop = Math.round(.40 * boxH + gap * 2) + 'px';   // room for the visible device
     const hr = hero.getBoundingClientRect();
     const headerH = header.offsetHeight;
@@ -171,7 +173,10 @@
     });
   }
 
-  function layout() { layoutHero(); layoutBench(); }
+  // floor line sits exactly at the device base (~74% down the model box)
+  const horizon = $('[data-horizon]');
+  const placeHorizon = () => { if (horizon) horizon.style.top = Math.round(device.offsetTop + .745 * device.offsetHeight) + 'px'; };
+  function layout() { layoutHero(); placeHorizon(); layoutBench(); }
   layout();
   ScrollTrigger.addEventListener('refreshInit', layout);
   if (document.fonts) document.fonts.ready.then(() => ScrollTrigger.refresh());
@@ -189,8 +194,8 @@
 
     const d = lineDelays(titleWords, .1, .03);
     gsap.set([header, light, floor], { opacity: 0 });
-    gsap.set(titleWords, { yPercent: 105 });
-    gsap.set(rig, { opacity: 0, y: 16 });
+    gsap.set(titleWords, { opacity: 0, filter: 'blur(10px)' });
+    gsap.set(rig, { opacity: 0 });
     Object.assign(cam, BASE); applyCam();
 
     gsap.timeline({ defaults: { ease: 'power3.out' }, onComplete: onDone })
@@ -200,8 +205,10 @@
       .to(boot, { opacity: 0, duration: .35 }, 1.0)
       .to(light, { opacity: 1, duration: 1.4, ease: 'power2.inOut' }, .55)
       .to(floor, { opacity: 1, duration: 1.4, ease: 'power2.inOut' }, .7)
-      .to(titleWords, { yPercent: 0, duration: 1.1, ease: 'expo.out', delay: i => d[i] }, 1.0)
-      .to(rig, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 1.25)
+      // soft focus-in: words sharpen and brighten in reading order; the device eases up after them
+      .to(titleWords, { opacity: 1, filter: 'blur(0px)', duration: 1.6, ease: 'sine.out', delay: i => d[i] * 1.6,
+        onComplete() { gsap.set(this.targets(), { clearProps: 'filter' }); } }, .9)
+      .to(rig, { opacity: 1, duration: 1.8, ease: 'sine.inOut' }, 1.3)
       .to(header, { opacity: 1, duration: .8 }, 1.5);
   }
 
@@ -264,9 +271,26 @@
     });
 
     // centre of the stage, measured when the trigger refreshes
-    const toCentre = () => (hero.clientHeight * (mobile ? .42 : .47)) - (device.offsetTop + device.offsetHeight / 2);
+    const toCentre = () => (hero.clientHeight * (mobile ? .44 : .47)) - (device.offsetTop + device.offsetHeight / 2);
     const centreX = () => { const r = device.getBoundingClientRect(), h = hero.getBoundingClientRect(); return h.width / 2 - (r.left - h.left + r.width / 2); };
     const shiftLeft = () => centreX() - (mobile ? 0 : hero.clientWidth * .2);
+
+    if (mobile) {
+      // phones: one quiet object, turning to a new view for each step; captions carry the story
+      tl.to(title, { y: lift, opacity: 0, duration: 1.8, ease: 'power1.in' }, 0)
+        .to(rig, { y: toCentre, scale: .92, duration: 2.2, ease: 'power1.inOut' }, 0)
+        .to(cam, { theta: 0, phi: 22, r: 94, duration: 2.2, ease: 'power1.inOut', onUpdate: applyCam }, 0)
+        .fromTo(caps[0], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .8, ease: 'power2.out' }, 1.5)
+        .fromTo(stepsBox, { opacity: 0 }, { opacity: 1, duration: .6 }, 1.5)
+        .to(caps[0], { opacity: 0, y: -16, duration: .5 }, 3.0)
+        .to(cam, { theta: 28, phi: 48, r: 98, duration: 1.4, ease: 'power2.inOut', onUpdate: applyCam }, 3.0)
+        .fromTo(caps[1], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .7, ease: 'power2.out' }, 3.7)
+        .to(caps[1], { opacity: 0, y: -16, duration: .5 }, 5.6)
+        .to(cam, { theta: -26, phi: 58, r: 100, duration: 1.4, ease: 'power2.inOut', onUpdate: applyCam }, 5.6)
+        .fromTo(caps[2], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .7, ease: 'power2.out' }, 6.3)
+        .to({}, { duration: .8 }, 8.2);
+      return tl;
+    }
 
     // --- 01 Physical repair: the headline lifts away; the camera looks down at the faceplate ---
     tl.to(title, { y: lift, opacity: 0, duration: 1.8, ease: 'power1.in' }, 0)
@@ -370,7 +394,7 @@
       Object.assign(cam, BASE); applyCam();
       buildStory({ mobile, reduce });
       buildBench({ mobile, reduce });
-      if (!reduce) { scanTl = buildScan(mobile); if (window.scrollY < 40) scanTl.play(); }
+      if (!reduce && !mobile) { scanTl = buildScan(mobile); if (window.scrollY < 40) scanTl.play(); }
       const killParallax = (!reduce && fine && !mobile) ? buildParallax() : null;
       return () => {
         if (scanTl) { scanTl.kill(); scanTl = null; }
