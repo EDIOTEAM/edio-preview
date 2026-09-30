@@ -65,6 +65,19 @@
     const s = Math.min(84, Math.floor(100 * avail / r.getBoundingClientRect().width * 10) / 10);
     title.style.fontSize = s + 'px';
   }
+  // phones, steps 2–3: where the small device sits, and the band below it for the case card / dataset
+  const phoneBand = () => {
+    const H = hero.clientHeight, headerH = header.offsetHeight;
+    const capH = Math.max(...caps.map(el => el.offsetHeight));
+    const capTop = H - 64 - capH;
+    const devC = headerH + H * .13;                    // centre of the small device
+    const top = Math.round(devC + .3 * device.offsetHeight * .5 + 40);
+    return { devC, top, room: capTop - 16 - top };
+  };
+  function placePhoneBand() {
+    const b = phoneBand();
+    caseEl.style.top = dataset.style.top = b.top + 'px';
+  }
   function layoutPhone() {
     // headline split around the device: line 1 above, device, line 2 below; the group is centred on screen
     const second = lines[1].parentElement;                 // .ht-line holding "intelligence layer."
@@ -89,7 +102,8 @@
     hero.style.removeProperty('--title-pad');
     hero.style.removeProperty('--dev-w');
     lines[1].parentElement.style.marginTop = '';
-    if (hero.clientWidth < 768) { layoutPhone(); return; }
+    caseEl.style.top = dataset.style.top = '';
+    if (hero.clientWidth < 768) { layoutPhone(); placePhoneBand(); return; }
     const hr = hero.getBoundingClientRect();
     const headerH = header.offsetHeight;
     const room = hero.clientHeight - headerH;
@@ -274,19 +288,37 @@
     const toCentre = () => (hero.clientHeight * (mobile ? .44 : .47)) - (device.offsetTop + device.offsetHeight / 2);
     const centreX = () => { const r = device.getBoundingClientRect(), h = hero.getBoundingClientRect(); return h.width / 2 - (r.left - h.left + r.width / 2); };
     const shiftLeft = () => centreX() - (mobile ? 0 : hero.clientWidth * .2);
+    if (horizon) tl.to(horizon, { opacity: 0, duration: 1.2 }, 0);   // floor line belongs to the first screen only
 
     if (mobile) {
-      // phones: one quiet object, turning to a new view for each step; captions carry the story
+      // phones: the device steps up out of the way; the case card and dataset form in the band beneath it
+      const upSmall = () => phoneBand().devC - (device.offsetTop + device.offsetHeight / 2);
       tl.to(title, { y: lift, opacity: 0, duration: 1.8, ease: 'power1.in' }, 0)
         .to(rig, { y: toCentre, scale: .92, duration: 2.2, ease: 'power1.inOut' }, 0)
         .to(cam, { theta: 0, phi: 22, r: 94, duration: 2.2, ease: 'power1.inOut', onUpdate: applyCam }, 0)
         .fromTo(caps[0], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .8, ease: 'power2.out' }, 1.5)
         .fromTo(stepsBox, { opacity: 0 }, { opacity: 1, duration: .6 }, 1.5)
+      // 02
         .to(caps[0], { opacity: 0, y: -16, duration: .5 }, 3.0)
-        .to(cam, { theta: 28, phi: 48, r: 98, duration: 1.4, ease: 'power2.inOut', onUpdate: applyCam }, 3.0)
+        .to(rig, { y: upSmall, scale: .5, duration: 1.1, ease: 'power2.inOut' }, 3.0)
+        .to(cam, { phi: 34, duration: 1.1, ease: 'power2.inOut', onUpdate: applyCam }, 3.0)
+        .fromTo(caseEl, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .6, ease: 'power2.out' }, 3.8)
+        .fromTo(caseRows, { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: .35, stagger: .16, ease: 'power2.out' }, 3.95)
         .fromTo(caps[1], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .7, ease: 'power2.out' }, 3.7)
+      // 03
         .to(caps[1], { opacity: 0, y: -16, duration: .5 }, 5.6)
-        .to(cam, { theta: -26, phi: 58, r: 100, duration: 1.4, ease: 'power2.inOut', onUpdate: applyCam }, 5.6)
+        .to(caseRows, { opacity: 0, duration: .35, stagger: .04 }, 5.6)
+        .to(caseEl, {
+          x: () => dataset.offsetLeft + targetTile.offsetLeft - caseEl.offsetLeft,
+          y: () => dataset.offsetTop + targetTile.offsetTop - caseEl.offsetTop,
+          scaleX: () => targetTile.offsetWidth / caseEl.offsetWidth,
+          scaleY: () => targetTile.offsetHeight / caseEl.offsetHeight,
+          duration: 1.1, ease: 'power3.inOut'
+        }, 6.0)
+        .fromTo(coldTiles, { opacity: 0 }, { opacity: 1, duration: .3, stagger: .03 }, 6.5)
+        .fromTo(targetTile, { opacity: 0 }, { opacity: 1, duration: .2 }, 7.05)
+        .to(caseEl, { opacity: 0, duration: .2 }, 7.1)
+        .fromTo(hotTiles, { opacity: 0 }, { opacity: 1, duration: .3, stagger: .1 }, 7.3)
         .fromTo(caps[2], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .7, ease: 'power2.out' }, 6.3)
         .to({}, { duration: .8 }, 8.2);
       return tl;
