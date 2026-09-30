@@ -14,6 +14,7 @@ to its still poster and the SmartClone section to a still render.
 | Home | `index.html` | `assets/js/home.js` |
 | Intelligence | `intelligence.html` | `assets/js/intelligence.js` |
 | Hardware (SmartClone) | `hardware.html` | `assets/js/hardware.js` |
+| Products (SmartClone 3D, EDIO App) | `products.html` | `assets/js/products.js` |
 | Impact | `impact.html` | `assets/js/impact.js` |
 | About | `about.html` | `assets/js/about.js` |
 | Contact | `contact.html` | `assets/js/contact.js` |
@@ -32,7 +33,7 @@ The header and footer markup is repeated in each HTML file. Change it in all six
 
 ## Conventions
 
-- Homepage sections 04–07 (`home-sections.js`) play on their own like short clips: each starts when it comes on
+- Homepage sections 04–06 (`home-sections.js`) play on their own like short clips: each starts when it comes on
   screen, pauses off screen, plays once and holds its last frame, then shows a Replay button. Scrolling doesn't drive
   them. The hero's pinned scroll story and the bench section (`home.js`) are separate and still scroll-driven.
 - After the hero, the homepage sits in one continuous background (`.atmos` in `index.html`, styled in
@@ -41,8 +42,11 @@ The header and footer markup is repeated in each HTML file. Change it in all six
 - Homepage load: the page is held still (no scrolling) from the first frame until the SmartClone model has fully
   drawn and the headline has typed. The hold is set in the `<head>` script of `index.html`, released by `home.js`,
   and has a 30-second failsafe. The "EDIO / Repair intelligence system" boot line shows while the model loads.
-- After the hero, cyan is toned down (`home-sections.css` sets a quieter `--cyan`/`--cyan-2` and softer glows on
-  sections 04–09 and the footer). The hero keeps its approved colours.
+- White theme, site-wide: `base.css` defines `--bg` (page), `--surface`/`--surface-2` (raised panels), `--fg` (text) and
+  `--on-accent` (text on the teal fill). `--cyan` is a deep teal (#0B7F91) that reads on white. The logo is
+  `assets/img/logo-wordmark.png` (dark); the light version is kept for dark backgrounds.
+- Vision section: a thin circuit draws itself around the headline, then a small light occasionally runs along a
+  trace to its pad (`home-sections.js`, "09 Vision"). The traces are laid out from the real text box.
 - Motion respects `prefers-reduced-motion`. Each page adds `is-intro` to `<html>` in `<head>` so the first frame is held
   until its intro runs, with a 4-second failsafe.
 - Copy comes from the previous EDIO site. Anything illustrative or in development is labelled on the page

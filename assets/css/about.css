@@ -8,7 +8,7 @@
    HERO
    ========================================================================== */
 .ab-hero {
-  position: relative; background: var(--deep); overflow: hidden;
+  position: relative; background: var(--bg); overflow: hidden;
   min-height: 100vh; min-height: 100svh;
   padding: calc(var(--header-h) + 20px) 0 clamp(56px, 7vw, 96px);
   display: flex; flex-direction: column;
@@ -42,19 +42,19 @@
 /* ==========================================================================
    STORY
    ========================================================================== */
-.story { padding-block: clamp(96px, 11vw, 160px); background: var(--deep); border-top: 1px solid var(--line); }
+.story { padding-block: clamp(96px, 11vw, 160px); background: var(--bg); border-top: 1px solid var(--line); }
 .story-grid { display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 24px; row-gap: 40px; align-items: start; }
 .story-grid .kicker { grid-column: 1 / -1; }
 .pull { grid-column: 1 / span 7; margin: 0; font-size: clamp(34px, 4.2vw, 66px); line-height: .98; }
 .story-text { grid-column: 8 / span 5; padding-top: 10px; }
 .story-text p { font-size: 18px; line-height: 1.65; color: var(--text-dim); }
 .story-text p + p { margin-top: 22px; }
-.story-text p:last-child { color: var(--white); }
+.story-text p:last-child { color: var(--fg); }
 
 /* ==========================================================================
    PHASES
    ========================================================================== */
-.phases { padding-block: clamp(96px, 11vw, 160px); background: var(--navy); border-top: 1px solid var(--line); }
+.phases { padding-block: clamp(96px, 11vw, 160px); background: var(--surface); border-top: 1px solid var(--line); }
 .phases-head { display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 24px; align-items: end; }
 .phases-head .kicker { grid-column: 1 / -1; }
 .phases-title { grid-column: 1 / span 7; margin-top: 22px; font-size: clamp(36px, 4.6vw, 72px); }
@@ -68,15 +68,15 @@
 .ph { position: relative; padding-top: 40px; }
 .ph::before {
   content: ""; position: absolute; left: 0; top: 0; width: 15px; height: 15px;
-  background: var(--navy); border: 1px solid var(--line-strong);
+  background: var(--surface); border: 1px solid var(--line-strong);
 }
 .ph--done::before { background: var(--cyan); border-color: var(--cyan); }
-.ph--now::before { background: var(--cyan-2); border-color: var(--cyan-2); box-shadow: 0 0 0 5px rgba(111, 211, 227, .18); }
-.ph--next::before { background: linear-gradient(90deg, var(--cyan) 50%, var(--navy) 50%); border-color: var(--cyan); }
+.ph--now::before { background: var(--cyan-2); border-color: var(--cyan-2); box-shadow: 0 0 0 5px rgba(11, 127, 145, .144); }
+.ph--next::before { background: linear-gradient(90deg, var(--cyan) 50%, var(--bg) 50%); border-color: var(--cyan); }
 .ph-n { display: flex; gap: 8px; align-items: baseline; font: 500 11px/1 var(--font-mono); letter-spacing: .12em; color: var(--cyan); text-transform: uppercase; }
 .ph-n b { font-weight: 500; color: var(--text-mute); }
 .ph--done .ph-n b { color: var(--cyan); }
-.ph--now .ph-n b { color: var(--deep); background: var(--cyan-2); padding: 3px 6px; margin: -3px 0; }
+.ph--now .ph-n b { color: var(--on-accent); background: var(--cyan-2); padding: 3px 6px; margin: -3px 0; }
 .ph h3 { margin-top: 16px; font: 700 clamp(17px, 1.45vw, 21px)/1.15 var(--font-display); }
 .ph p { margin-top: 8px; font-size: 14px; line-height: 1.5; color: var(--text-dim); }
 .ph--later h3, .ph--later p { opacity: .6; }
@@ -88,7 +88,7 @@
 /* ==========================================================================
    NO BORDERS — map
    ========================================================================== */
-.borders { padding-block: clamp(96px, 11vw, 160px); background: var(--deep); }
+.borders { padding-block: clamp(96px, 11vw, 160px); background: var(--bg); }
 .borders-grid { display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 24px; align-items: center; }
 .borders-copy { grid-column: 1 / span 4; }
 .borders-title { margin-top: 22px; font-size: clamp(28px, 2.7vw, 42px); line-height: 1.02; }
@@ -96,20 +96,20 @@
 .legend li { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); font: 500 12px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-mute); }
 .legend li i { width: 8px; height: 8px; border-radius: 50%; background: #3E5664; }
 .legend li b { margin-left: auto; font-weight: 500; color: var(--cyan); }
-.legend .lg-on { color: var(--white); }
-.legend .lg-on i { background: var(--cyan); box-shadow: 0 0 0 3px rgba(28, 186, 211, .22); }
+.legend .lg-on { color: var(--fg); }
+.legend .lg-on i { background: var(--cyan); box-shadow: 0 0 0 3px rgba(11, 127, 145, .176); }
 .borders-note { margin-top: 20px; font-size: 14.5px; line-height: 1.55; color: var(--text-mute); max-width: 44ch; }
 
 .map { grid-column: 5 / span 8; margin: 0; }
 .map svg { width: 100%; height: auto; display: block; overflow: hidden; }
-.map .land { fill: #13303F; stroke: none; }
-.map .land--near { fill: #1A3A4B; }
-.map .india { fill: rgba(28, 186, 211, .3); stroke: var(--cyan); stroke-width: .8; stroke-linejoin: round; }
+.map .land { fill: #E6EEF1; stroke: none; }
+.map .land--near { fill: #D9E5E9; }
+.map .india { fill: rgba(11, 127, 145, .24); stroke: var(--cyan); stroke-width: .8; stroke-linejoin: round; }
 .city circle { fill: #5E7784; }
 .city text { font: 500 11px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; fill: #7F98A6; }
 .city--on circle { fill: var(--cyan-2); }
 .city--on .city-ring { fill: none; stroke: var(--cyan); stroke-width: 1; transform-box: fill-box; transform-origin: center; animation: ping-city 2.8s var(--ease) infinite; }
-.city--on text { fill: var(--white); font-size: 12.5px; }
+.city--on text { fill: var(--fg); font-size: 12.5px; }
 @keyframes ping-city { 0% { transform: scale(.4); opacity: 1; } 70%, 100% { transform: scale(1.8); opacity: 0; } }
 .map figcaption { margin-top: 14px; text-align: right; font: 400 10.5px/1.4 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-mute); }
 
@@ -137,16 +137,16 @@
 /* ==========================================================================
    TEAM
    ========================================================================== */
-.team { background: var(--deep); }
+.team { background: var(--bg); }
 .team-figure { margin: 0; position: relative; }
 .team-media { position: relative; height: clamp(260px, 36vw, 540px); overflow: hidden; }
-.team-media img { position: absolute; inset: -3% 0; width: 100%; height: 106%; object-fit: cover; object-position: 50% 45%; filter: saturate(.6) brightness(.85) contrast(1.05); }
-.team-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(7, 25, 35, .75), rgba(7, 25, 35, 0) 40%); }
+.team-media img { position: absolute; inset: -3% 0; width: 100%; height: 106%; object-fit: cover; object-position: 50% 45%; filter: saturate(.85) brightness(.98) contrast(1.05); }
+.team-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(255, 255, 255, .25), rgba(255, 255, 255, 0) 35%); }
 .team-figure figcaption { position: absolute; left: 0; right: 0; bottom: clamp(20px, 3vw, 40px); }
 .team-tag {
   display: inline-block; padding: 12px 14px;
   font: 500 11px/1 var(--font-mono); letter-spacing: .18em; text-transform: uppercase;
-  background: var(--deep); color: var(--white); border-left: 2px solid var(--cyan);
+  background: var(--bg); color: var(--fg); border-left: 2px solid var(--cyan);
 }
 
 /* ==========================================================================

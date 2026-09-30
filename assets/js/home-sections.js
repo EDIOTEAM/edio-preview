@@ -1,6 +1,6 @@
-/* EDIO — Homepage sections 04–09 (after the hero story).
+/* EDIO — Homepage sections 04–09 (after the hero story); the SmartClone showcase now lives on products.html.
    Kept separate from home.js so the approved hero is never affected.
-   Sections 04–07 play on their own, like short clips: each starts when it comes on screen, pauses while
+   Sections 04–06 play on their own, like short clips: each starts when it comes on screen, pauses while
    off screen, plays once and holds its last frame, then offers a replay. Scrolling never drives them,
    so nothing here interferes with the hero's pinned story. Works without GSAP. */
 (() => {
@@ -221,65 +221,6 @@
   }
   const tlClip = clip({ section: cats, watch: $('[data-tl]', cats), duration: 5200, paint: paintTl, replayIn: cats });
   $$('[data-tl-node]').forEach((n, i) => n.addEventListener('click', () => tlClip.hold((i / 3) * .85)));
-
-  /* ==========================================================================
-     07 SmartClone: a guided tour of the device, then it rests; tilt toward the cursor (as on edio.in)
-     ========================================================================== */
-  const products = $('[data-products]');
-  const stage = $('[data-scx]');
-  const tilt = $('[data-scx-tilt]');
-  const float = $('[data-scx-float]');
-  const model = $('[data-scx-model]');
-  if (stage && !reduce) {
-    stage.addEventListener('pointermove', e => {
-      const r = stage.getBoundingClientRect();
-      const nx = (e.clientX - r.left) / r.width - .5, ny = (e.clientY - r.top) / r.height - .5;
-      tilt.style.setProperty('--ry', (nx * 8).toFixed(2) + 'deg');
-      tilt.style.setProperty('--rx', (-ny * 6).toFixed(2) + 'deg');
-    });
-    stage.addEventListener('pointerleave', () => { tilt.style.setProperty('--ry', '0deg'); tilt.style.setProperty('--rx', '0deg'); });
-  }
-  if (products && model) {
-    // the still render stays until the 3D model has actually drawn
-    const modelReady = new Promise(r => {
-      if (model.loaded) return r(true);
-      model.addEventListener('load', () => r(true), { once: true });
-      model.addEventListener('error', () => r(false), { once: true });
-    });
-    modelReady.then(ok => { if (ok) float.classList.add('is-live'); });
-
-    // tour order runs left to right across the faceplate
-    const TOUR = ['hotspot-prog', 'hotspot-screen', 'hotspot-keys', 'hotspot-status', 'hotspot-ir', 'hotspot-iface'];
-    const hots = TOUR.map(s => $(`[slot="${s}"]`, model)).filter(Boolean);
-    const REST = { theta: -18, phi: 52 };
-    const LEAD = .06, TAIL = .1;   // a beat before the first marker, and time to settle after the last
-    let lastHot = -1;
-    const orbit = (theta, phi) => model.setAttribute('camera-orbit', `${theta.toFixed(2)}deg ${phi.toFixed(2)}deg 78%`);
-    function paintTour(p) {
-      // camera sways gently across the device and comes back to rest
-      const sway = Math.sin(clamp(p / (1 - TAIL)) * Math.PI * 2);
-      const lift = Math.sin(clamp(p / (1 - TAIL)) * Math.PI);
-      orbit(REST.theta + sway * 16, REST.phi - lift * 8);
-      const k = (p - LEAD) / (1 - LEAD - TAIL);
-      const i = k >= 0 && k < 1 ? Math.floor(k * hots.length) : -1;
-      if (i === lastHot) return;
-      lastHot = i;
-      hots.forEach((h, j) => h.classList.toggle('is-on', j === i));
-    }
-    const tour = clip({
-      section: products, watch: stage, duration: hots.length * 2400 + 1400, paint: paintTour,
-      replayIn: stage,
-      // without a 3D model there is nothing to tour: never start
-      ready: modelReady.then(ok => ok || new Promise(() => {})),
-    });
-    // the visitor takes over: stop the tour and leave the camera where they put it
-    model.addEventListener('camera-change', e => {
-      if (!e.detail || e.detail.source !== 'user-interaction' || tour.done) return;
-      tour.stop();
-      hots.forEach(h => h.classList.remove('is-on'));
-      lastHot = -1;
-    });
-  }
 
   /* ==========================================================================
      Layout changes: re-measure the map wires and repaint where each clip is

@@ -11,14 +11,14 @@
   position: relative;
   height: 100vh; height: 100svh; min-height: 640px;
   overflow: hidden; isolation: isolate;
-  background: var(--deep);
+  background: var(--bg);
 }
 .hw-scene { position: absolute; inset: 0; z-index: 1; will-change: transform; }
 .hw-scene .px { position: absolute; inset: -40px; will-change: transform; }
 .hw-scene .plate { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
 .hw-plate img {
   position: absolute; inset: 0; width: 100%; height: 100%;
-  filter: saturate(.62) brightness(.74) contrast(1.08);
+  filter: saturate(.85) brightness(.98) contrast(1.08);
   /* the photo's left and top edges sit inside the viewport — feather both into navy */
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 7%), linear-gradient(180deg, transparent 0, #000 12%);
   -webkit-mask-composite: source-in;
@@ -29,16 +29,16 @@
 .hw-shade {
   position: absolute; inset: 0; z-index: 2; pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(7, 25, 35, .7) 0, rgba(7, 25, 35, 0) 20%),
-    linear-gradient(0deg, rgba(7, 25, 35, .9) 0, rgba(7, 25, 35, 0) 26%),
-    linear-gradient(90deg, rgba(7, 25, 35, .9) 0, rgba(7, 25, 35, .55) 30%, rgba(7, 25, 35, 0) 44%);
+    linear-gradient(180deg, rgba(255, 255, 255, .7) 0, rgba(255, 255, 255, 0) 20%),
+    linear-gradient(0deg, rgba(255, 255, 255, .9) 0, rgba(255, 255, 255, 0) 26%),
+    linear-gradient(90deg, rgba(255, 255, 255, .9) 0, rgba(255, 255, 255, .55) 30%, rgba(255, 255, 255, 0) 44%);
 }
 .mk.is-clipped .mk-lead { visibility: hidden; }
 /* leader-routed callouts: --dx/--dy are unitless design px, scaled by --k (plate scale) from JS */
 .hw-hero { --k: 1; }
 .mk--lead { --x: calc(var(--dx) * var(--k) * 1px); --y: calc(var(--dy) * var(--k) * 1px); }
 .mk-lead { position: absolute; left: 0; top: 0; opacity: max(var(--on), var(--hit)); }
-.mk-lead i { position: absolute; background: rgba(111, 211, 227, .55); }
+.mk-lead i { position: absolute; background: rgba(11, 127, 145, .44); }
 .mk-lead i:first-child { left: 0; width: 1px; top: min(0px, var(--y)); height: max(var(--y), calc(var(--y) * -1)); }
 .mk-lead i:last-child { top: var(--y); height: 1px; left: min(0px, var(--x)); width: max(var(--x), calc(var(--x) * -1)); }
 .mk--lead .mk-label { left: calc(var(--x) + 8px); top: calc(var(--y) - 11px); }
@@ -71,7 +71,7 @@
 .hw-hero .hero-cta { margin-top: 40px; }
 
 /* ---------- Facts strip ---------- */
-.facts { background: var(--deep); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.facts { background: var(--bg); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .facts-row { display: grid; grid-template-columns: repeat(4, 1fr); }
 .facts-row > div { padding: 26px 24px 28px; border-left: 1px solid var(--line); }
 .facts-row > div:first-child { border-left: 0; padding-left: 0; }
@@ -87,10 +87,10 @@
 .pro-title { margin: 22px 0 8px; font-size: clamp(36px, 4.2vw, 64px); }
 .pro-copy p:not(.kicker) { margin-top: 20px; max-width: 44ch; font-size: 17px; line-height: 1.6; color: var(--text-dim); }
 .pro-figure { grid-column: 7 / span 6; }
-.pro-media { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--navy); }
+.pro-media { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--surface); }
 .pro-media img {
   position: absolute; inset: -8% 0; width: 100%; height: 116%; object-fit: cover;
-  filter: saturate(.7) brightness(.86) contrast(1.06);
+  filter: saturate(.85) brightness(.98) contrast(1.06);
 }
 .pro-figure figcaption, .mode-media figcaption {
   margin-top: 14px; text-align: right;
@@ -109,7 +109,7 @@
 /* ==========================================================================
    02 MODES — symptom index + instrument stage
    ========================================================================== */
-.modes { background: var(--navy); padding-block: clamp(96px, 10vw, 140px); border-top: 1px solid var(--line); }
+.modes { background: var(--surface); padding-block: clamp(96px, 10vw, 140px); border-top: 1px solid var(--line); }
 .modes-head { display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 24px; }
 .modes-head .kicker { grid-column: 1 / -1; }
 .modes-title { grid-column: 1 / span 8; margin-top: 22px; font-size: clamp(36px, 4.4vw, 68px); }
@@ -121,17 +121,17 @@
 .mode-pick {
   display: grid; grid-template-columns: 40px 1fr; row-gap: 6px; width: 100%;
   padding: 16px 0; text-align: left;
-  background: none; border: 0; border-top: 1px solid var(--line); color: var(--white);
+  background: none; border: 0; border-top: 1px solid var(--line); color: var(--fg);
   pointer-events: none; /* interactive only in the stage layout */
 }
 .mode-n { font: 500 11px/1.6 var(--font-mono); letter-spacing: .12em; color: var(--cyan); }
 .mode-sym { font: 600 18px/1.3 var(--font-display); }
 .mode-name { grid-column: 2; font: 500 10.5px/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--text-mute); }
 
-.mode-media { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--deep); margin-top: 12px; }
+.mode-media { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--bg); margin-top: 12px; }
 .mode-media img {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-  filter: saturate(.68) brightness(.8) contrast(1.08);
+  filter: saturate(.85) brightness(.98) contrast(1.08);
 }
 /* crops of product shots: point p% of the image sits at p% of the frame, then scale about it */
 .mode-media--zif img { object-position: 28% 62%; transform-origin: 28% 62%; scale: 1.5; }
@@ -140,8 +140,8 @@
 .hex {
   position: absolute; right: 7%; top: 11%; width: min(400px, 64%);
   padding: 14px 16px 12px;
-  background: #0B1F2B; border: 1px solid var(--line-strong);
-  font: 500 12px/1 var(--font-mono); color: #9FC3CF;
+  background: #F3F7F8; border: 1px solid var(--line-strong);
+  font: 500 12px/1 var(--font-mono); color: #3F5A66;
 }
 .hex::before, .hex::after { content: ""; position: absolute; width: 10px; height: 10px; border: 0 solid var(--cyan); }
 .hex::before { left: -1px; top: -1px; border-width: 1px 0 0 1px; }
@@ -154,7 +154,7 @@
 .hex-foot { padding-top: 12px; border-top: 1px solid var(--line); margin-top: 10px; }
 .hex-grid { display: grid; grid-template-columns: 1.6fr repeat(8, 1fr); row-gap: 9px; padding-top: 12px; }
 .hex-grid .a { color: var(--text-mute); }
-.hex-grid .hi { justify-self: start; color: var(--deep); background: var(--cyan); box-shadow: 0 0 0 3px var(--cyan); }
+.hex-grid .hi { justify-self: start; color: var(--on-accent); background: var(--cyan); box-shadow: 0 0 0 3px var(--cyan); }
 
 .readout { padding-top: 22px; }
 .readout-tag { font: 500 10.5px/1.4 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--cyan); }
@@ -163,7 +163,7 @@
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .chips li {
   padding: 7px 10px; border: 1px solid var(--line-strong);
-  font: 500 10.5px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: #D6E7ED;
+  font: 500 10.5px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: #1B2C33;
 }
 
 /* ---- Stage layout (JS adds .is-stage on wide screens) ---- */
@@ -199,7 +199,7 @@
 .is-stage .readout {
   position: absolute; left: 0; bottom: 0; width: min(540px, 64%);
   padding: 24px 28px 26px;
-  background: rgba(7, 25, 35, .92); border-top: 1px solid var(--cyan);
+  background: rgba(255, 255, 255, .92); border-top: 1px solid var(--cyan);
 }
 .is-stage .readout > * { transform: translateY(10px); opacity: 0; transition: transform .6s var(--ease), opacity .5s ease; }
 .is-stage .mode.is-on .readout > * { transform: none; opacity: 1; }
@@ -237,7 +237,7 @@
 .record-card {
   grid-column: 7 / span 6; position: relative;
   padding: 22px 26px 10px;
-  background: rgba(10, 34, 51, .7); border: 1px solid var(--line-strong);
+  background: rgba(255, 255, 255, .7); border: 1px solid var(--line-strong);
 }
 .record-card::before, .record-card::after { content: ""; position: absolute; width: 12px; height: 12px; border: 0 solid var(--cyan); }
 .record-card::before { left: -1px; top: -1px; border-width: 1px 0 0 1px; }
@@ -258,7 +258,7 @@
 /* ==========================================================================
    04 PROCESS RAIL
    ========================================================================== */
-.process { padding-block: clamp(96px, 10vw, 140px) clamp(110px, 12vw, 170px); background: var(--deep); border-top: 1px solid var(--line); }
+.process { padding-block: clamp(96px, 10vw, 140px) clamp(110px, 12vw, 170px); background: var(--bg); border-top: 1px solid var(--line); }
 .process-title { margin-top: 22px; font-size: clamp(36px, 4.4vw, 68px); }
 .rail { position: relative; margin-top: 72px; }
 .rail-line { position: absolute; left: 0; right: 0; top: 7px; height: 1px; background: var(--line-strong); }
@@ -267,7 +267,7 @@
 .rail-steps li { position: relative; padding-top: 38px; }
 .rail-steps li::before {
   content: ""; position: absolute; left: 0; top: 0; width: 15px; height: 15px;
-  background: var(--deep); border: 1px solid var(--line-strong);
+  background: var(--bg); border: 1px solid var(--line-strong);
   transition: background-color .3s ease, border-color .3s ease;
 }
 .rail-steps li.is-on::before { background: var(--cyan); border-color: var(--cyan); }
@@ -316,11 +316,11 @@
 /* ==========================================================================
    06 SHIPS / DOESN'T
    ========================================================================== */
-.ships { padding-block: clamp(96px, 11vw, 160px); background: var(--deep); }
+.ships { padding-block: clamp(96px, 11vw, 160px); background: var(--bg); }
 .ships-title { margin-top: 22px; font-size: clamp(36px, 4.4vw, 68px); max-width: 16ch; }
 .ships-grid { display: grid; grid-template-columns: 7fr 5fr; gap: 24px; margin-top: 56px; align-items: start; }
 .ships-col { padding: 30px 32px 32px; border: 1px solid var(--line-strong); }
-.ships-col--planned { border: 1px dashed rgba(111, 211, 227, .24); }
+.ships-col--planned { border: 1px dashed rgba(11, 127, 145, .192); }
 .ships-col h3 {
   display: flex; align-items: center; padding-bottom: 18px;
   font: 500 11px/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase;
@@ -357,8 +357,8 @@
   }
   .hw-shade {
     background:
-      linear-gradient(180deg, rgba(7, 25, 35, .96) 0, rgba(7, 25, 35, .75) 36%, rgba(7, 25, 35, 0) 52%),
-      linear-gradient(0deg, rgba(7, 25, 35, .9) 0, rgba(7, 25, 35, 0) 24%);
+      linear-gradient(180deg, rgba(255, 255, 255, .96) 0, rgba(255, 255, 255, .75) 36%, rgba(255, 255, 255, 0) 52%),
+      linear-gradient(0deg, rgba(255, 255, 255, .9) 0, rgba(255, 255, 255, 0) 24%);
   }
   .hw-hero .mk-label, .hw-hero .mk-lead { display: none; }
 }
@@ -398,8 +398,8 @@
   .hw-hero .mk-label, .hw-hero .mk-lead { display: none; } /* dots only at phone size */
   .hw-shade {
     background:
-      linear-gradient(180deg, rgba(7, 25, 35, .96) 0, rgba(7, 25, 35, .7) 40%, rgba(7, 25, 35, 0) 58%),
-      linear-gradient(0deg, rgba(7, 25, 35, .95) 0, rgba(7, 25, 35, 0) 30%);
+      linear-gradient(180deg, rgba(255, 255, 255, .96) 0, rgba(255, 255, 255, .7) 40%, rgba(255, 255, 255, 0) 58%),
+      linear-gradient(0deg, rgba(255, 255, 255, .95) 0, rgba(255, 255, 255, 0) 30%);
   }
   .hl-h { display: none; }
   .hw-hero-copy { max-width: none; justify-content: flex-start; padding: 18px 0 24px; }
