@@ -116,8 +116,6 @@
   pointer-events: none;
 }
 .device-rig { position: absolute; inset: 0; }
-.device-still { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: saturate(.86); pointer-events: none; transition: opacity .6s ease; }
-.device.is-live .device-still { opacity: 0; }
 .hero:not(.is-placed) .device { visibility: hidden; }
 .scan {
   position: absolute; left: 0; top: 24%; bottom: 20%; width: 1px; z-index: 3; opacity: 0; pointer-events: none;

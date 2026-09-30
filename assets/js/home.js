@@ -24,19 +24,6 @@
   const boot = $('[data-boot]');
   const bootStatus = $('[data-boot-status]');
   const hotspots = $$('[data-hs]', hero);
-  // the 3D viewer (1.1 MB script + 1.5 MB model) loads only after the headline is up, so slow phones and
-  // slow networks get a smooth intro first; the still picture shows until the model has rendered
-  let viewerRequested = false;
-  function loadViewer() {
-    if (viewerRequested) return; viewerRequested = true;
-    const sc = document.createElement('script');
-    sc.type = 'module'; sc.src = 'assets/js/vendor/model-viewer.min.js';
-    document.head.appendChild(sc);
-  }
-  window.addEventListener('scroll', loadViewer, { once: true, passive: true });
-  setTimeout(loadViewer, 6000);                         // fallback if nothing else asks for it
-  // once the real 3D model has rendered, the still picture steps aside
-  model.addEventListener('load', () => device.classList.add('is-live'), { once: true });
   const hsDisplay = $('[data-hs-display]', hero);
   const caps = $$('[data-cap]', hero);
   const steps = $$('[data-steps] li', hero);
@@ -225,7 +212,7 @@
   let scanTl = null;
 
   function typeHeadline() {
-    const per = .042;                                   // seconds per letter
+    const per = .026;                                   // seconds per letter
     const tl = gsap.timeline();
     titleChars.forEach((ch, i) => {
       tl.call(() => {
@@ -458,7 +445,6 @@
   placed = true;
   hero.classList.add('is-placed');
   runIntro(() => {
-    setTimeout(loadViewer, 300);                      // after the typewriter has finished
     revealHeadings(null, reduceMQ.matches);
     const mm = gsap.matchMedia();
     mm.add({
