@@ -63,10 +63,31 @@
     const s = Math.min(84, Math.floor(100 * avail / r.getBoundingClientRect().width * 10) / 10);
     title.style.fontSize = s + 'px';
   }
+  function layoutPhone() {
+    // headline split around the device: line 1 above, device, line 2 below; the group is centred on screen
+    const second = lines[1].parentElement;                 // .ht-line holding "intelligence layer."
+    const boxH = device.offsetHeight;
+    const gap = 14;
+    second.style.marginTop = Math.round(.40 * boxH + gap * 2) + 'px';   // room for the visible device
+    const hr = hero.getBoundingClientRect();
+    const headerH = header.offsetHeight;
+    const pad0 = parseFloat(getComputedStyle(title).paddingTop);
+    const top0 = title.getBoundingClientRect().top - hr.top + pad0;
+    const h = second.getBoundingClientRect().bottom - (title.getBoundingClientRect().top + pad0);
+    const want = headerH + (hero.clientHeight - headerH - h) * .48;
+    hero.style.setProperty('--title-pad', Math.max(headerH + 16, Math.round(pad0 + want - top0)) + 'px');
+    const r = document.createRange(); r.selectNodeContents(lines[0]);
+    const rs = r.getClientRects(), last = rs[rs.length - 1];
+    const l1Bottom = last.bottom - hero.getBoundingClientRect().top;
+    // faceplate top sits ~33% down the model box
+    hero.style.setProperty('--dev-top', Math.round(l1Bottom + gap - .33 * boxH) + 'px');
+  }
   function layoutHero() {
     fitHeadline();
     hero.style.removeProperty('--title-pad');
     hero.style.removeProperty('--dev-w');
+    lines[1].parentElement.style.marginTop = '';
+    if (hero.clientWidth < 768) { layoutPhone(); return; }
     const hr = hero.getBoundingClientRect();
     const headerH = header.offsetHeight;
     const room = hero.clientHeight - headerH;
@@ -331,6 +352,11 @@
     };
   }
 
+  // wait for the headline font (max 1.5s) so the device is placed once, against final text metrics
+  const fontsReady = document.fonts ? Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]) : Promise.resolve();
+  fontsReady.then(() => {
+  layout();
+  hero.classList.add('is-placed');
   runIntro(() => {
     revealHeadings(null, reduceMQ.matches);
     const mm = gsap.matchMedia();
@@ -351,5 +377,6 @@
         if (killParallax) killParallax();
       };
     });
+  });
   });
 })();
